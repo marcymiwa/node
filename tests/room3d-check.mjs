@@ -57,6 +57,22 @@ for (const fy of [0.42, 0.48, 0.52, 0.38, 0.56]) {
 }
 if (!hitMarcy) problems.push('tap on Marcy in 3D did not mumble');
 await page.screenshot({ path: path.join(OUT, '3d-5-marcy.png') });
+// ジャイロ: スマホを 縦に もって 正面（beta 90）→ 左に 90° まわす → 上を むく。にせの 傾きイベントを おくる
+const orient = (alpha, beta, gamma) => page.evaluate(([a, b, g]) => window.dispatchEvent(new DeviceOrientationEvent('deviceorientation', { alpha: a, beta: b, gamma: g, absolute: false })), [alpha, beta, gamma]);
+await page.goto(`${base}/index.html?time=14:00&lang=ja&debug=1`, { waitUntil: 'load' });
+await page.waitForFunction(() => window.__niwa.room3d, null, { timeout: 15000 });
+await page.evaluate(() => window.__niwa.room3d.requestGyro());
+for (let i = 0; i < 20; i++) { await orient(30, 90, 0); await page.waitForTimeout(30); }
+await page.waitForTimeout(500);
+const d1 = await page.evaluate(() => window.__niwa.room3d.debug());
+if (!d1.gyroOn) problems.push('gyro did not turn on after orientation events');
+await page.screenshot({ path: path.join(OUT, '3d-7-gyro-front.png') });
+for (let i = 0; i < 30; i++) { await orient(30 + 90, 90, 0); await page.waitForTimeout(30); }
+await page.waitForTimeout(500);
+await page.screenshot({ path: path.join(OUT, '3d-8-gyro-left90.png') });
+for (let i = 0; i < 30; i++) { await orient(30, 130, 0); await page.waitForTimeout(30); }
+await page.waitForTimeout(500);
+await page.screenshot({ path: path.join(OUT, '3d-9-gyro-up.png') });
 await page.goto(`${base}/index.html?time=21:00&lang=en`, { waitUntil: 'load' });
 await page.waitForTimeout(2500);
 await page.screenshot({ path: path.join(OUT, '3d-6-night.png') });

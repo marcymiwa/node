@@ -140,16 +140,29 @@ async function start3D() {
     room3d = await startRoom3D({
       stage: $('#stage'), hutSvg: $('#scene svg'), rooms: ROOMS, reduced: reduceMotion,
       onDoor: (id) => doorPrompt(id), onMarcy, onSign,
+      onGyro: () => { const b = $('#gyroBtn'); if (b) b.hidden = true; },
     });
     app.classList.add('is3d');
     const ctl = $('#lookCtl'); ctl.hidden = false;
     const gyroBtn = $('#gyroBtn');
-    if (room3d.needsPermission) gyroBtn.hidden = false;
+    if (room3d.needsPermission && !room3d.gyroOn) gyroBtn.hidden = false;
     gyroBtn.addEventListener('click', async (e) => {
       e.stopPropagation(); sound.unlock();
       const ok = await room3d.requestGyro();
       if (ok) { gyroBtn.hidden = true; say(t(UI.lookHint), 3000); } else say(t(UI.gyroNo), 3000);
     });
+    if (params.has('debug')) {
+      // 実機の たしかめ用: かたむきの 値と ようすを 画面の 上に 出す
+      const hud = document.createElement('pre');
+      hud.className = 'debug-hud';
+      hud.setAttribute('aria-hidden', 'true');
+      document.body.append(hud);
+      const fmtv = (v) => (typeof v === 'number' ? v.toFixed(1) : String(v));
+      setInterval(() => {
+        const d = room3d.debug();
+        hud.textContent = Object.entries(d).map(([k, v]) => `${k}: ${fmtv(v)}`).join('\n');
+      }, 250);
+    }
     $('#recenterBtn').addEventListener('click', (e) => { e.stopPropagation(); room3d.recenter(); sound.back(); });
     setTimeout(() => { if (!winClosed) say(t(UI.lookHint), 3600); }, 3800);
   } catch (err) {

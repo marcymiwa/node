@@ -36,6 +36,27 @@ npx serve .            # または python3 -m http.server
 
 GitHub Pages なら、Settings → Pages で このブランチ（または main）の ルートを えらぶだけ。
 
+## 公開（GitHub Pages）
+
+公開先: **https://marcymiwa.github.io/node/**（もじだけの ページは `/node/list.html`）
+
+1. GitHub の このリポジトリ → **Settings** → **Pages**
+2. **Build and deployment** の Source を **Deploy from a branch** に
+3. Branch を `claude/portfolio-mobile-version-do3rxo`、フォルダを `/ (root)` に して **Save**
+4. 1〜2 分 まつと 上の URL で ひらける（Actions の「pages build and deployment」が みどりに なれば OK）
+
+ブランチに push する たびに 自動で 公開しなおされる。`.nojekyll` が あるので Jekyll は とおらない。
+シェア画像（og:image）は この URL の 前提で 書いてある（ちがう 場所で 公開するときは index.html の og:url / og:image を なおす）。
+
+## 実機で ためす
+
+- **iPhone（Safari）**: ひらいたら 右上の **「かたむけて みる」** → 「許可」。スマホを 縦に もって まわると 見まわせる
+- **Android（Chrome）**: たいてい そのまま かたむきで うごく。うごかなければ「かたむけて みる」を おす
+- どちらも ドラッグでも 見まわせる。まよったら **「しょうめん」**
+- うまく うごかない ときは **`?debug=1`** を つけて ひらく（例: `https://marcymiwa.github.io/node/?debug=1`）。
+  画面の 上に かたむきの 値（alpha / beta / gamma）、ゆるしの ようす（permission）、GPU が 出るので、スクリーンショットを おくってね
+- 2D の 小屋で ひらく: `?flat=1`
+
 ## ファイル
 
 | ファイル | なかみ |

@@ -104,7 +104,7 @@ export function supports3D() {
   } catch { return false; }
 }
 
-export async function startRoom3D({ stage, hutSvg, rooms, onDoor, onMarcy, onSign, reduced = false, colors }) {
+export async function startRoom3D({ stage, hutSvg, rooms, onDoor, onMarcy, onSign, onGyro, reduced = false, colors }) {
   const resolve = cssVars(document.querySelector('#app'));
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'low-power' });
   renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
@@ -295,8 +295,11 @@ export async function startRoom3D({ stage, hutSvg, rooms, onDoor, onMarcy, onSig
   const q0 = new THREE.Quaternion();
   const screenAngle = () => THREE.MathUtils.degToRad((screen.orientation && screen.orientation.angle) || window.orientation || 0);
 
+  const dbg = { events: 0, nullEvents: 0, alpha: null, beta: null, gamma: null, absolute: null, permission: 'none' };
   function onOrient(e) {
-    if (e.alpha == null && e.beta == null) return;
+    dbg.events++;
+    if (e.alpha == null && e.beta == null) { dbg.nullEvents++; return; }
+    dbg.alpha = e.alpha; dbg.beta = e.beta; dbg.gamma = e.gamma; dbg.absolute = e.absolute;
     const a = THREE.MathUtils.degToRad(e.alpha || 0), b = THREE.MathUtils.degToRad(e.beta || 0), g = THREE.MathUtils.degToRad(e.gamma || 0);
     euler.set(b, a, -g, 'YXZ');
     const q = new THREE.Quaternion().setFromEuler(euler).multiply(q1).multiply(q0.setFromAxisAngle(zee, -screenAngle()));
@@ -305,7 +308,9 @@ export async function startRoom3D({ stage, hutSvg, rooms, onDoor, onMarcy, onSig
       const e2 = new THREE.Euler().setFromQuaternion(q, 'YXZ');
       gyroBase = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), -e2.y);
     }
+    const first = !gyro;
     gyro = gyroBase.clone().multiply(q);
+    if (first && onGyro) onGyro(); // かたむきが とどいた（ボタンを けす）
   }
   let listening = false;
   function listenGyro() {
@@ -314,13 +319,16 @@ export async function startRoom3D({ stage, hutSvg, rooms, onDoor, onMarcy, onSig
     window.addEventListener('deviceorientation', onOrient, true);
   }
   const needsPermission = typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function';
-  if (!needsPermission) listenGyro();
+  // さいしょから 聞いておく。ゆるしの いらない 端末では すぐ うごく。
+  // ゆるしの いる 端末（iPhone や 新しい Chrome）は「かたむけて みる」で ゆるすと とどきはじめる。
+  listenGyro();
   async function requestGyro() {
     if (!needsPermission) { listenGyro(); gyroBase = null; return true; }
     try {
       const r = await DeviceOrientationEvent.requestPermission();
+      dbg.permission = r;
       if (r === 'granted') { listenGyro(); gyroBase = null; return true; }
-    } catch { /* ゆるされなかった */ }
+    } catch (err) { dbg.permission = `error: ${err && err.message}`; /* ゆるされなかった */ }
     return false;
   }
 
@@ -418,6 +426,18 @@ export async function startRoom3D({ stage, hutSvg, rooms, onDoor, onMarcy, onSig
     needsPermission,
     requestGyro,
     get gyroOn() { return !!gyro; },
+    // ?debug=1 の ときに 画面に 出す（実機で かたむきが とどいているか しらべる用）
+    debug() {
+      const gl = renderer.getContext();
+      const ext = gl.getExtension('WEBGL_debug_renderer_info');
+      return {
+        ...dbg, gyroOn: !!gyro, listening, needsPermission, secure: window.isSecureContext,
+        screenAngle: (screen.orientation && screen.orientation.angle) ?? window.orientation ?? 0,
+        yawDeg: Math.round(THREE.MathUtils.radToDeg(yaw)), pitchDeg: Math.round(THREE.MathUtils.radToDeg(pitch)),
+        gpu: ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : 'unknown',
+        dpr: renderer.getPixelRatio(),
+      };
+    },
     hop() { hopT = clock.elapsedTime; },
     recenter() { yaw = 0; pitch = 0; gyroBase = null; },
     applyColors,

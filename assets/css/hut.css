@@ -520,3 +520,11 @@ button { font: inherit; color: inherit; }
   .look-ctl { top: auto; bottom: 8px; left: 8px; right: auto; justify-content: flex-start; }
 }
 #gyroBtn { background: linear-gradient(180deg, #ffd0e8, #ff8fc8); }
+
+/* ?debug=1 の 表示（実機の たしかめ用） */
+.debug-hud {
+  position: fixed; left: 6px; top: 70px; z-index: 99; margin: 0; padding: 6px 8px;
+  max-width: calc(100vw - 12px); pointer-events: none;
+  background: rgba(20, 14, 40, .78); color: #dffbf3; border-radius: 8px;
+  font: 12px/1.35 ui-monospace, Menlo, monospace; white-space: pre-wrap;
+}
