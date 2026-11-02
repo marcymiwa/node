@@ -108,14 +108,11 @@ button { font: inherit; color: inherit; }
   font-size: 16px; line-height: 1; cursor: pointer; white-space: nowrap;
   box-shadow: 0 3px 0 var(--window-edge);
 }
-.chip-icon { font-size: 18px; }
+.chip-icon { width: 22px; height: 22px; display: block; }
+#soundToggle[aria-pressed="false"] .waves, #soundToggle[aria-pressed="true"] .mute { display: none; }
 #soundToggle .chip-state { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 #soundToggle { position: relative; min-width: 44px; justify-content: center; }
-#soundToggle[aria-pressed="false"] .chip-icon { opacity: .55; }
-#soundToggle[aria-pressed="false"]::after {
-  content: ""; position: absolute; left: 50%; top: 50%; width: 24px; height: 2.5px; border-radius: 2px;
-  background: var(--window-edge); transform: translate(-50%, -50%) rotate(-40deg);
-}
+#soundToggle[aria-pressed="false"] .chip-icon { opacity: .7; }
 .chip:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--window-edge); }
 .chip:focus-visible, .menu .item:focus-visible, .talk-btn:focus-visible, .back:focus-visible, .sheet-close:focus-visible, .link-btn:focus-visible {
   outline: 3px solid var(--cursor); outline-offset: 2px;
