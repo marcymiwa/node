@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>NIWA by Marcy Miwa — ヒント小屋</title>
+  <meta name="description" content="こんにちは！まーしーです！ — NIWA（塔の中の温室）のヒント小屋。スマホ版。">
+  <meta name="theme-color" content="#2a2140">
+  <meta property="og:title" content="NIWA by Marcy Miwa">
+  <meta property="og:description" content="こんにちは！まーしーです！">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="assets/img/ogp.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Zen+Maru+Gothic:wght@500;700&display=swap">
+  <link rel="stylesheet" href="assets/css/hut.css">
+</head>
+<body>
+  <a class="skip" href="list.html" data-i18n="skipToList">もじだけの ページへ</a>
+
+  <div class="app" id="app" data-tod="day">
+    <!-- 上: 小屋の中（シーン） -->
+    <header class="topbar">
+      <h1 class="logo"><span class="logo-niwa">NIWA</span><span class="logo-by" data-i18n="by">by Marcy Miwa</span></h1>
+      <div class="toggles">
+        <button class="chip" id="soundToggle" type="button" aria-pressed="false" data-i18n-aria="soundLabel" aria-label="おと">
+          <span aria-hidden="true" class="chip-icon">♪</span><span class="chip-state" data-i18n="soundOff">OFF</span>
+        </button>
+        <button class="chip" id="langToggle" type="button" data-i18n-aria="langLabel" aria-label="ことば">
+          <span lang="ja">JA</span><span class="sep" aria-hidden="true">/</span><span lang="en">EN</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="stage" id="stage" aria-label="ヒント小屋">
+      <div class="sky" aria-hidden="true">
+        <div class="sun"></div>
+        <canvas class="glitter" id="glitter"></canvas>
+      </div>
+      <svg class="dome" viewBox="0 0 400 400" preserveAspectRatio="xMidYMax slice" aria-hidden="true" id="dome"></svg>
+      <div class="scene" id="scene">
+        <!-- 小屋とまーしーは scene.js が描く -->
+      </div>
+      <p class="bubble" id="bubble" role="status" aria-live="polite"></p>
+    </main>
+
+    <!-- 下: マーシーの窓 -->
+    <section class="window-wrap" aria-label="マーシーの窓" id="windowWrap">
+      <div class="window" id="window">
+        <div class="window-head">
+          <span class="speaker" id="speaker">まーしー</span>
+          <button class="back" id="backBtn" type="button" hidden><span aria-hidden="true">◀</span> <span data-i18n="back">もどる</span></button>
+        </div>
+        <div class="window-body" id="windowBody" aria-live="polite">
+          <p class="line" id="line"></p>
+          <span class="more" id="more" aria-hidden="true">▼</span>
+        </div>
+        <nav class="menu" id="menu" hidden></nav>
+      </div>
+    </section>
+
+    <!-- 作品の窓 -->
+    <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" hidden>
+      <div class="sheet-card">
+        <button class="sheet-close" id="sheetClose" type="button" data-i18n-aria="close" aria-label="とじる">×</button>
+        <div class="sheet-scroll" id="sheetScroll"></div>
+      </div>
+    </div>
+
+    <noscript>
+      <p class="noscript">JavaScript が オフのようです。<a href="list.html">もじだけの ページ</a>で さくひんを みられます。</p>
+    </noscript>
+  </div>
+
+  <script type="module" src="assets/js/app.js"></script>
+</body>
+</html>
