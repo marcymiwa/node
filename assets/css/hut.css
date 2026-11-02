@@ -103,7 +103,7 @@ button { font: inherit; color: inherit; }
 .toggles { display: flex; gap: 6px; }
 .chip {
   display: inline-flex; align-items: center; gap: 4px;
-  min-height: 40px; padding: 4px 12px;
+  min-height: 44px; padding: 4px 12px;
   border-radius: 999px; border: 2px solid var(--window-edge);
   background: color-mix(in srgb, var(--window-bg) 88%, transparent);
   font-size: 16px; line-height: 1; cursor: pointer; white-space: nowrap;
@@ -118,8 +118,13 @@ button { font: inherit; color: inherit; }
 .chip:focus-visible, .menu .item:focus-visible, .talk-btn:focus-visible, .back:focus-visible, .sheet-close:focus-visible, .link-btn:focus-visible {
   outline: 3px solid var(--cursor); outline-offset: 2px;
 }
+/* 空の うえでも 見えるように こい 線 + あかるい ふち */
+.chip:focus-visible, .door:focus-visible {
+  outline: 3px solid var(--window-edge); outline-offset: 2px;
+  box-shadow: 0 0 0 7px var(--window-bg);
+}
 .chip .sep { opacity: .45; }
-.chip [lang] { opacity: .45; }
+.chip [lang] { opacity: .7; }
 .chip [lang].on { opacity: 1; text-decoration: underline; text-underline-offset: 3px; }
 .chip[aria-pressed="true"] { background: var(--sun); }
 
@@ -174,7 +179,7 @@ button { font: inherit; color: inherit; }
   font: 16px/1 var(--font-dot); color: var(--window-edge);
 }
 .door:active svg { transform: translateY(2px); }
-.door:focus-visible { outline: 3px dashed var(--riso-pink); outline-offset: 2px; border-radius: 8px; }
+.door:focus-visible { border-radius: 10px; }
 
 .hut-sign { cursor: pointer; }
 .marcy { cursor: pointer; transform-box: fill-box; transform-origin: 50% 100%; }
@@ -191,9 +196,11 @@ button { font: inherit; color: inherit; }
 /* ふきだし */
 .bubble {
   position: absolute; z-index: 4;
-  left: 50%; top: 10%;
+  /* 小屋に あわせて おく（かんばんの した・まーしーの あたまの うえ）。長い ときは よこに ひろげる */
+  left: 50%; top: auto;
+  bottom: calc(min(100%, 92vw, 400px) * .57 + 8px);
   transform: translate(-50%, 6px) scale(.96);
-  max-width: min(78%, 320px);
+  width: max-content; max-width: min(92%, 380px);
   margin: 0; padding: 8px 14px;
   background: var(--window-bg); color: var(--window-ink);
   border: 2px solid var(--window-edge); border-radius: 16px;
@@ -212,12 +219,14 @@ button { font: inherit; color: inherit; }
 /* ---------- マーシーの窓（MOTHER2 風） ---------- */
 .window-wrap {
   position: relative; z-index: 5;
+  flex: 0 1 auto; min-height: 0;
+  display: flex; flex-direction: column;
   padding: 0 12px calc(12px + var(--safe-b));
   background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--ground-dark) 60%, transparent) 30%);
 }
 .window {
   position: relative;
-  min-height: 200px; max-height: 60dvh;
+  flex: 0 1 auto; min-height: 0; max-height: 60dvh;
   display: flex; flex-direction: column;
   background-color: var(--window-bg); background-image: var(--grain); background-size: 5px 5px;
   color: var(--window-ink);
@@ -241,7 +250,7 @@ button { font: inherit; color: inherit; }
 }
 .window.closed { display: none; }
 .window-head {
-  position: absolute; right: 12px; top: -20px; z-index: 2;
+  position: absolute; right: 12px; top: -22px; z-index: 2;
   display: flex; align-items: center; gap: 8px;
 }
 .speaker {
@@ -262,14 +271,15 @@ button { font: inherit; color: inherit; }
 .talk-btn:active { transform: translateY(2px); }
 .back {
   display: inline-flex; align-items: center; gap: 4px;
-  min-height: 40px; padding: 0 12px;
+  min-height: 44px; padding: 0 12px;
   background: var(--window-bg); border: 2px solid var(--window-edge); border-radius: 999px;
   box-shadow: 2px 3px 0 rgba(42, 33, 64, .2);
   cursor: pointer; font-size: 16px;
 }
 .window-body {
-  position: relative; flex: 0 0 auto;
-  min-height: 64px; padding: 6px 2px 4px;
+  position: relative; flex: 0 1 auto;
+  min-height: 0; padding: 6px 2px 4px;
+  overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
   cursor: pointer;
 }
 .line {
@@ -288,6 +298,7 @@ button { font: inherit; color: inherit; }
 
 .menu {
   display: grid; grid-template-columns: 1fr 1fr; gap: 2px 6px;
+  flex: none;
   margin-top: 6px; padding-top: 8px;
   border-top: 2px dashed color-mix(in srgb, var(--window-edge) 35%, transparent);
   overflow-y: auto; overscroll-behavior: contain;
@@ -377,7 +388,7 @@ button { font: inherit; color: inherit; }
   box-shadow: 2px 3px 0 rgba(42, 33, 64, .16);
   font-size: 16px; line-height: 1.5;
 }
-.star { color: var(--riso-pink); }
+.star { color: #c2186b; } /* かんばんの 字と おなじ。紙の うえで 5:1 くらい */
 .work-title, .sheet-title {
   margin: 4px 0 4px; font-family: var(--font-round); font-weight: 700;
   font-size: 24px; line-height: 1.35; letter-spacing: .01em;
@@ -454,13 +465,35 @@ button { font: inherit; color: inherit; }
 .noscript { position: absolute; inset: auto 16px 16px; background: var(--window-bg); padding: 12px; border-radius: 12px; }
 
 /* 横向き・大きめの画面 */
+@media (min-height: 640px) { .window-body { min-height: 64px; } .window { min-height: 200px; } }
 @media (min-height: 760px) { .window { min-height: 260px; } }
+/* ひくい 画面（320x568 など）: 窓が はみでないように 小さく */
+@media (max-height: 600px) {
+  .stage { min-height: 140px; }
+  .line { font-size: 17px; line-height: 1.6; }
+  .window { padding-top: 20px; padding-bottom: 10px; }
+}
+/* せまい 画面: メニューの 字を すこし 小さく して 1行に */
+@media (max-width: 340px) {
+  .menu .item { font-size: 16px; padding-left: 20px; letter-spacing: 0; }
+  .menu .item::before { left: 4px; }
+}
 @media (orientation: landscape) and (max-height: 520px) {
   .app { flex-direction: row; max-width: none; }
-  .topbar { position: absolute; left: 0; right: 0; }
-  .stage { flex: 1 1 50%; }
-  .window-wrap { flex: 1 1 50%; display: flex; align-items: flex-end; padding-top: 56px; }
+  .topbar { position: absolute; left: 0; right: 0; padding-top: calc(8px + var(--safe-t)); }
+  .stage { flex: 1 1 50%; margin-top: calc(56px + var(--safe-t)); min-height: 0; }
+  .window-wrap { flex: 1 1 50%; justify-content: flex-end; padding-top: 56px; }
   .window { width: 100%; max-height: calc(100dvh - 70px); }
+  .sheet { padding-top: calc(10px + var(--safe-t)); justify-content: center; }
+  .sheet-card { max-width: 640px; }
+  .sheet-card::before { height: 30px; }
+  .work-visual { width: min(100%, calc(52dvh * 4 / 3)); margin-inline: auto; }
+}
+/* タブレット・PC: まわりを 夜空に して 窓わくを つける */
+@media (min-width: 700px) {
+  body { background: radial-gradient(120% 80% at 50% 0%, #3d2f6e, var(--ink) 70%); }
+  .app { box-shadow: 0 0 0 3px var(--window-edge), 0 0 60px rgba(0, 0, 0, .35); }
+  .menu { grid-template-columns: repeat(3, 1fr); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -473,12 +506,17 @@ button { font: inherit; color: inherit; }
 /* 3D の ときは 2D の 絵を かくす（小屋の SVG は 3D の 板の もとに つかうので 消さない） */
 .is3d .sky, .is3d .dome { display: none; }
 .is3d .scene { visibility: hidden; }
+/* 3D は 小屋が 大きく うつるので、ふきだしは 地面の うえ（顔と かんばんに かぶらない） */
+.is3d .bubble { bottom: 12px; }
 /* とびらは 3D の なかに あるので、ボタンは 読み上げ・キーボード用に 見えなく して のこす */
 .is3d .doors { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 .is3d .doors .door:focus { position: fixed; }
 .look-ctl {
-  position: absolute; z-index: 5; right: 10px; bottom: 10px;
+  position: absolute; z-index: 5; right: 8px; top: 8px;
   display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end;
 }
-.look-ctl .chip { min-height: 44px; font-size: 16px; }
+.look-ctl .chip { min-height: 44px; padding: 4px 10px; font-size: 16px; }
+@media (orientation: landscape) and (max-height: 520px) {
+  .look-ctl { top: auto; bottom: 8px; left: 8px; right: auto; justify-content: flex-start; }
+}
 #gyroBtn { background: linear-gradient(180deg, #ffd0e8, #ff8fc8); }

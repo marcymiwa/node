@@ -140,9 +140,13 @@ function flowerPot(parent, x, base, flowers) {
   return g;
 }
 
+// まーしー と かんばん の よみあげ名（ことばを かえたら labelHut で かきかえる）
+const HUT_LABELS = { marcy: 'まーしー（はなす）', sign: 'ヒント（あそびかた）' };
+
 export function renderHut(container, { signText = 'ヒント' } = {}) {
   container.textContent = '';
-  const svg = el('svg', { viewBox: '0 0 400 400', role: 'img', 'aria-hidden': 'true' }, container);
+  // svg ぜんたいは かくさない（まーしー と かんばん は ボタンなので よみあげに のこす）
+  const svg = el('svg', { viewBox: '0 0 400 400', role: 'presentation' }, container);
   const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const defs = el('defs', {}, svg);
@@ -209,7 +213,7 @@ export function renderHut(container, { signText = 'ヒント' } = {}) {
   el('path', { d: 'M162 175 L159 179', stroke: '#fff', 'stroke-width': 1.6, 'stroke-linecap': 'round', opacity: .8 }, inner);
 
   // ---- まーしー（3頭身・ながい黒髪・ラベンダーの ワンピース・手をふる） ----
-  const m = el('g', { class: 'marcy bob', id: 'marcy', role: 'button', tabindex: '0' }, svg);
+  const m = el('g', { class: 'marcy bob', id: 'marcy', role: 'button', tabindex: '0', 'aria-label': HUT_LABELS.marcy }, svg);
   const mx = 200;
   // うしろ髪
   el('path', { d: `M${mx - 27} 204 C${mx - 30} 182 ${mx - 16} 174 ${mx} 174 C${mx + 16} 174 ${mx + 30} 182 ${mx + 27} 204 L${mx + 32} 268 L${mx - 32} 268 Z`, fill: HUT.hair, ...line(3) }, m);
@@ -342,7 +346,7 @@ export function renderHut(container, { signText = 'ヒント' } = {}) {
   el('path', { d: 'M277 85 Q277.5 81 280.5 79.5', stroke: '#fff', 'stroke-width': 1.6, fill: 'none', 'stroke-linecap': 'round', opacity: .85 }, roof);
 
   // ---- かんばん「ヒント」 ----
-  const sign = el('g', { class: 'hut-sign', id: 'hutSign', role: 'button', tabindex: '0' }, svg);
+  const sign = el('g', { class: 'hut-sign', id: 'hutSign', role: 'button', tabindex: '0', 'aria-label': HUT_LABELS.sign }, svg);
   el('rect', { x: 134, y: 18, width: 132, height: 82, rx: 16, fill: HUT.teal, ...line(3) }, sign);
   el('path', { d: 'M150 22 L250 22', stroke: '#fff', 'stroke-width': 2.4, 'stroke-linecap': 'round', opacity: .55 }, sign);
   el('path', { d: 'M137 72 L137 84 Q137 96 150 97 L250 97 Q263 96 263 84 L263 72', fill: 'none', stroke: HUT.tealDark, 'stroke-width': 4, opacity: .6 }, sign);
@@ -374,11 +378,24 @@ export function renderHut(container, { signText = 'ヒント' } = {}) {
   sprout(26, 364, 1.1); flower(46, 372, '#ff8cc6', .95); flower(10, 380, '#ffffff', .75); sprout(78, 374, .75);
   sprout(322, 374, .8); flower(352, 370, '#9d7eff', 1); sprout(376, 362, 1.1); flower(390, 382, '#f6b6ff', .7);
 
+  // かざりの 部品は よみあげない（まーしー と かんばん だけ のこす）。
+  // 一番上の 部品の ならびは かえない（room3d.js が つかう）。
+  [...svg.children].forEach((c) => { if (c !== m && c !== sign) c.setAttribute('aria-hidden', 'true'); });
+  // かんばんの 文字は aria-label で よむので かくす
+  sign.querySelectorAll('text').forEach((n) => n.setAttribute('aria-hidden', 'true'));
+
   return {
     marcy: m,
     sign,
     setSign(text) { signLabel.textContent = text; },
   };
+}
+
+// まーしー と かんばん の よみあげ名を かえる（ことばの きりかえ用）
+// labelHut(hut, { marcy: 'Marcy (talk)', sign: 'Hint (how to play)' })
+export function labelHut(hut, { marcy, sign } = {}) {
+  if (marcy) hut.marcy.setAttribute('aria-label', marcy);
+  if (sign) hut.sign.setAttribute('aria-label', sign);
 }
 
 // 作品の 小さな絵（モチーフごと）。画像がなくても さみしくないように。

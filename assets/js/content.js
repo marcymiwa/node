@@ -2,6 +2,7 @@
 // 文は {ja, en} の組。表示は app.js が ことばの設定で選ぶ。
 // PC版（塔の中の温室）の ことば（content.js / tower の会話）を そのまま使っている。
 // スマホにあわせて書きかえたのは「あそびかた」だけ（PC版は キーボードの説明のため）。
+// PC版に ない ことばには「// スマホ版で 追加」と 書いてある。
 // 作品を足すときは WORKS に 1 つ足して、ROOMS の works に id を入れるだけ。
 
 export const SITE = {
@@ -19,23 +20,22 @@ export const SITE = {
 // 画面のことば
 export const UI = {
   by: { ja: 'by Marcy Miwa', en: 'by Marcy Miwa' },
-  skipToList: { ja: 'もじだけの ページへ', en: 'Text-only page' },
+  skipToList: { ja: 'もじだけの ページへ', en: 'Go to the text-only page' },
   soundLabel: { ja: 'おと', en: 'Sound' },
-  soundOn: { ja: 'おとあり', en: 'On' },
+  soundOn: { ja: '♪ おとあり', en: '♪ On' },
   soundOff: { ja: 'おとなし', en: 'Off' },
-  langLabel: { ja: '使用言語（日本語 / English）', en: 'Language (日本語 / English)' },
+  langLabel: { ja: '使用言語', en: 'Language' },
   back: { ja: 'もどる', en: 'Back' },
   close: { ja: 'とじる', en: 'Close' },
   speaker: { ja: 'まーしー', en: 'Marcy' },
-  stage: { ja: 'ヒント小屋', en: 'The hint hut' },
+  stage: { ja: 'ヒント小屋', en: 'Hint hut' },
   window: { ja: 'マーシーの窓', en: "Marcy's window" },
-  talkAgain: { ja: 'はなす', en: 'Talk' },
+  talkAgain: { ja: 'はなす', en: 'Talk' }, // スマホ版で 追加
   details: { ja: 'くわしく', en: 'More' },
   year: { ja: '制作年', en: 'Year' },
   place: { ja: '場所', en: 'Place' },
   format: { ja: '形式', en: 'Format' },
   room: { ja: 'へや', en: 'Room' },
-  spot: { ja: 'へやの どこ', en: 'Where' },
   approach: { ja: '近づくと', en: 'Up close' },
   point: { ja: 'この作品で伝えたい一点', en: 'The one thing' },
   caption: { ja: 'キャプション', en: 'Caption' },
@@ -44,13 +44,15 @@ export const UI = {
   garden: { ja: '庭', en: 'Garden' },
   soon: { ja: 'じゅんびちゅう', en: 'Coming soon' },
   textOnly: { ja: 'もじだけの ページ', en: 'Text-only page' },
+  // スマホ版で 追加
   pcOnly: {
     ja: 'この へやの なかは、パソコンの 3D の温室で あるいて みられるよ。',
     en: 'On a computer, you can walk around inside this room in the 3D greenhouse.',
   },
-  openPc: { ja: '3D の温室へ', en: 'Enter the 3D greenhouse' },
-  clips: { ja: '映像', en: 'Clips' },
-  items: { ja: 'おいている もの', en: 'In the shop' },
+  openPc: { ja: '3D の温室へ', en: 'Enter the 3D greenhouse' }, // スマホ版で 追加
+  clips: { ja: '映像', en: 'Clips' }, // スマホ版で 追加
+  items: { ja: 'おいている もの', en: 'In the shop' }, // スマホ版で 追加
+  // スマホ版で 追加（3D の 庭の かたむき）
   gyro: { ja: 'かたむけて みる', en: 'Tilt to look' },
   recenter: { ja: 'しょうめん', en: 'Face the hut' },
   lookHint: { ja: 'スマホを かたむけるか、ドラッグで まわりを みられるよ。', en: 'Tilt your phone or drag to look around.' },
@@ -91,15 +93,15 @@ export const ROOMS = [
       en: 'Visuals from my VJ set in Shibuya. Touch the deck to switch to the next clip.',
     },
     works: [],
-    // PC版の デッキで きりかわる 7 本（2026-08-15 OR SHIBUYA）
-    clips: [
-      { id: '01', name: 'thermal field', colors: ['#ff33a8', '#ffbe2e', '#2f4fb8'] },
-      { id: '02', name: 'editorial grid', colors: ['#fff6e9', '#2a2140', '#f23a9a'] },
-      { id: '03', name: 'thermal contour', colors: ['#ff6a2b', '#9d7eff', '#33d6b4'] },
-      { id: '04', name: 'riso halftone', colors: ['#2f4fb8', '#f23a9a', '#fff6e9'] },
-      { id: '05', name: 'heat matrix', colors: ['#ffbe2e', '#ff33a8', '#2a2140'] },
-      { id: '07', name: 'bayer dither', colors: ['#a8e032', '#2a2140', '#eef3ff'] },
-      { id: '08', name: 'crt bars', colors: ['#6f86ff', '#ff33a8', '#33d6b4'] },
+    // PC版の デッキで きりかわる 7 本（色は PC版の VJ の 4 色を ずらして つかう）
+    clips: [ // スマホ版で 追加
+      { id: '01', name: 'thermal field', colors: ['#ff5fa2', '#5ff2ff', '#fff15f'] },
+      { id: '02', name: 'editorial grid', colors: ['#5ff2ff', '#fff15f', '#9d7bff'] },
+      { id: '03', name: 'thermal contour', colors: ['#fff15f', '#9d7bff', '#ff5fa2'] },
+      { id: '04', name: 'riso halftone', colors: ['#9d7bff', '#ff5fa2', '#5ff2ff'] },
+      { id: '05', name: 'heat matrix', colors: ['#ff5fa2', '#5ff2ff', '#fff15f'] },
+      { id: '07', name: 'bayer dither', colors: ['#5ff2ff', '#fff15f', '#9d7bff'] },
+      { id: '08', name: 'crt bars', colors: ['#fff15f', '#9d7bff', '#ff5fa2'] },
     ],
   },
   {
@@ -110,7 +112,7 @@ export const ROOMS = [
       en: 'Electronics, physical works and NFT art. For commissions and purchases, please get in touch.',
     },
     works: [],
-    items: [
+    items: [ // スマホ版で 追加
       { ja: '電子工作', en: 'Electronics' },
       { ja: '物理作品', en: 'Physical works' },
       { ja: 'NFTアート', en: 'NFT art' },
@@ -122,10 +124,7 @@ export const ROOMS = [
 export const GARDEN = {
   id: 'garden', no: 0, color: '#33d6b4',
   name: { ja: '庭', en: 'Garden' },
-  lede: {
-    ja: '温室の まんなかの 庭。らせん階段「つくることは、生きること。」は のぼれるよ。',
-    en: 'The garden in the middle of the greenhouse. You can climb the spiral staircase, “To make is to live.”',
-  },
+  lede: { ja: '', en: '' }, // PC版の 庭には 文が ない
   works: ['tsukuru'],
 };
 
@@ -143,10 +142,10 @@ export const WORKS = [
     },
     approach: { ja: '近づくと、光と音が流れ出す。', en: 'Come closer, and light and sound begin to flow.' },
     point: { ja: '万物に思いやりをもつこと。', en: 'To hold compassion for all things.' },
-    // 展示のキャプション（会場で 使ったもの）
+    // 展示のキャプション（会場で 使ったもの。PDF の 文の まま）
     caption: {
-      ja: 'どうぞ、そっとお花に\nあるいはだれかに触れてみてください。\n触れると空間に光が広がります。\nそれはお花が喜んでいるように 見えるかもしれませんが、\nあなた自身の心の中に生まれた 「よろこび」の形でもあります。\n私たちには、他者の感情を鏡のように映し出す\n不思議な働きがあります。\nあなたが触れて生まれた優しい光は\nそれを見た誰かの心にも反射し\nあたたかな癒しを届けます。\n誰かを大切に思うことはあなたをCURAすること\nあなたを大切に思うことは誰かをCURAすること\n私とあなた、ヒトとモノ。\n触れ合うことで境界線は静かに溶け合い、\nあなたの幸せが、いつの間にか誰かを癒していく。\nここから始まる、絶え間ない 「癒し」の循環に\nどうかゆっくりと身をゆだねてみてください。',
-      en: 'Please, gently touch the flowers,\nor perhaps someone beside you.\nAs you touch, light spreads across the space.\nIt may seem as though the flowers are rejoicing, but it is also the shape of the “joy”\nborn within your own heart.\nWe possess a wondrous ability\nto reflect the emotions of others like a mirror.\nThe gentle light born from your touch will reflect in the hearts of those who see it, delivering a warm sense of healing.\nTo cherish someone is to CURA yourself.\nTo cherish yourself is to CURA someone else.\nYou and I, people and things.\nThrough touch, our boundaries quietly melt away, and your happiness, before you know it, heals another.\nPlease, slowly surrender yourself to this endless cycle of healing that begins right here.',
+      ja: 'どうぞ、そっとお花に\nあるいはだれかに触れてみてください。\n触れると空間に光が広がります。\nそれはお花が喜んでいるように 見えるかもしれませんが、\nあなた自身の心の中に生まれた 「よろこび」の形でもあります。\n私たちには、他者の感情を鏡のように映し出す\n不思議な働きがあります。\nあなたが触れて生まれた優しい光は\nそれを見た誰かの心にも反射し\nあたたかな癒しを届けます。\n誰かを大切に思うことはあなたをCURAすること あなたを大切に思うことは誰かをCURAすること 私とあなた、ヒトとモノ。\n触れ合うことで境界線は静かに溶け合い、\nあなたの幸せが、いつの間にか誰かを癒していく。\nここから始まる、絶え間ない 「癒し」の循環に\nどうかゆっくりと身をゆだねてみてください。',
+      en: 'Please, gently touch the flowers,\nor perhaps someone beside you.\nAs you touch, light spreads across the space.\nIt may seem as though the flowers are rejoicing, but it is also the shape of the "joy"\nborn within your own heart.\nWe possess a wondrous ability\nto reflect the emotions of others like a mirror.\nThe gentle light born from your touch will reflect in the hearts of those who see it, delivering a warm sense of healing.\nTo cherish someone is to CURA yourself.\nTo cherish yourself is to CURA someone else. You and I, people and things.\nThrough touch, our boundaries quietly melt away, and your happiness, before you know it, heals another. Please, slowly surrender yourself to this endless cycle of healing that begins right here.',
     },
   },
   {
@@ -222,7 +221,7 @@ export const TALK = {
     { id: 'bye', label: { ja: 'またね', en: 'See you' } },
   ],
 
-  // スマホ版の あそびかた（PC版は W A S D の説明なので、さわりかたに書きかえた）
+  // スマホ版の あそびかた（PC版は W A S D の説明なので、さわりかたに書きかえた）// スマホ版で 追加
   howto: [
     { ja: 'ここは ヒント小屋。この まどで わたしと はなせるよ。', en: 'This is the hint hut. You can talk with me in this window.' },
     { ja: 'もじを タップすると つぎへ。えらびたい ものを タップしてね。', en: 'Tap the text to go on, and tap whatever you want to choose.' },
@@ -251,6 +250,4 @@ export const TALK = {
   byeShort: { ja: 'またね！', en: 'See you!' },
   farewell: { ja: 'きてくれて ありがとう！ さくひんの いちらんは ここから みられるよ。', en: 'Thanks for coming! You can find the list of works here.' },
   farewellPdf: { ja: 'きてくれて ありがとう！ さくひんの いちらんと PDF は ここから みられるよ。', en: 'Thanks for coming! You can find the list of works and the PDF here.' },
-
-  worksAsk: { ja: 'どの さくひんを みる？', en: 'Which work would you like to see?' },
 };

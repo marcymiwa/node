@@ -28,9 +28,12 @@ const section = (lang) => {
   const id = (s) => `${lang}-${s}`;
   const roomName = (r) => (r.id === 'garden' ? t(UI.garden) : `${circled(r.no)} ${t(r.name)}`);
   const roomOf = (w) => [...ROOMS, GARDEN].find((r) => r.id === w.room);
+  // へやの どこ は PC版と おなじく へやの 名前に つける: ① 解築停留所(教室) / ① Kaichiku Teiryujo (Classroom)
+  const roomVal = (w, r) => roomName(r) + (t(w.spot) ? (lang === 'ja' ? `(${t(w.spot)})` : ` (${t(w.spot)})`) : '');
+  const ledeP = (o) => (t(o) ? `<p>${br(t(o))}</p>` : '');
   const workLi = (w) => {
     const r = roomOf(w);
-    const meta = [w.year, t(w.format), r ? roomName(r) : ''].filter(Boolean).join(' · ');
+    const meta = [w.year, t(w.format), r ? roomVal(w, r) : ''].filter(Boolean).join(' · ');
     const body = [t(w.lede), t(w.point) ? `→ ${t(w.point)}` : ''].filter(Boolean);
     return `<li><strong class="wt">${esc(t(w.title))}</strong>${t(w.subtitle) ? ` <span class="m">(${esc(t(w.subtitle))})</span>` : ''}<br><span class="m">${esc(meta)}</span>${body.map((b) => `<br>${br(b)}`).join('')}${
       t(w.caption) ? `<details><summary>${esc(t(UI.caption))}</summary><p class="deep">${br(t(w.caption))}</p></details>` : ''}</li>`;
@@ -39,7 +42,7 @@ const section = (lang) => {
   const rooms = ROOMS.map((r) => {
     const works = r.works.map((wid) => byId[wid]).filter(Boolean);
     return `<section class="room" style="--c:${r.color}"><h3>${esc(roomName(r))}${r.soon ? ` <span class="badge">${esc(t(UI.soon))}</span>` : ''}</h3>
-<p>${br(t(r.lede))}</p>
+${ledeP(r.lede)}
 ${works.length ? `<ul>${works.map(workLi).join('\n')}</ul>` : ''}
 ${r.items ? `<p>${r.items.map((it) => `<span class="pill">${esc(t(it))}</span>`).join(' ')}</p><p><a href="#${id('contact')}">→ ${esc(t(L.contact))}</a></p>` : ''}
 ${r.clips ? `<p class="m">${esc(t(UI.clips))}: ${r.clips.map((c) => esc(c.name)).join(' / ')}</p>` : ''}</section>`;
@@ -52,7 +55,7 @@ ${r.clips ? `<p class="m">${esc(t(UI.clips))}: ${r.clips.map((c) => esc(c.name))
 <h2 id="${id('rooms')}">${esc(t(L.rooms))}</h2>
 ${rooms}
 <h2 id="${id('garden')}" class="garden">${esc(t(UI.garden))}</h2>
-<p>${br(t(GARDEN.lede))}</p>
+${ledeP(GARDEN.lede)}
 <ul>${garden.map(workLi).join('\n')}</ul>
 <h2 id="${id('about')}">${esc(t(L.about))}</h2>
 <p><strong>${esc(t(UI.speaker))}</strong> — Marcy Miwa</p>

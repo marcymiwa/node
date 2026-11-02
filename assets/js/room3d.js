@@ -24,7 +24,8 @@ const LAYERS = [
 
 function cssVars(root) {
   const cs = getComputedStyle(root);
-  return (str) => str.replace(/var\((--[\w-]+)\)/g, (_, v) => cs.getPropertyValue(v).trim() || '#000');
+  // 値の " は ' に（属性の なかに 入ると SVG が こわれて 絵が 出なくなる。かんばんの 字の 書体で おきた）
+  return (str) => str.replace(/var\((--[\w-]+)\)/g, (_, v) => (cs.getPropertyValue(v).trim() || '#000').replace(/"/g, "'"));
 }
 
 // SVG の 一部だけを 画像（canvas）に する
@@ -374,7 +375,7 @@ export async function startRoom3D({ stage, hutSvg, rooms, onDoor, onMarcy, onSig
   new ResizeObserver(resize).observe(stage);
   resize();
 
-  const base = new THREE.Quaternion().setFromEuler(new THREE.Euler(Math.atan2(LOOK_Y - EYE.y, EYE.z) * 0.9, 0, 0, 'YXZ'));
+  const base = new THREE.Quaternion().setFromEuler(new THREE.Euler(Math.atan2(LOOK_Y + 0.55 - EYE.y, EYE.z), 0, 0, "YXZ")); // かんばんまで 見えるように すこし 上を むく
   const dragQ = new THREE.Quaternion();
   const clock = new THREE.Clock();
   let raf = 0, running = true;

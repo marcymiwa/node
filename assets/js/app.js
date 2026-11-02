@@ -32,6 +32,7 @@ const sheetEl = $('#sheet');
 const sheetScroll = $('#sheetScroll');
 const speakerEl = $('#speaker');
 const talkBtn = $('#talkBtn');
+winEl.setAttribute('tabindex', '-1'); // シートを とじた あとの フォーカスの もどりさき
 
 // ---------- 保存（できなくても動く） ----------
 const store = {
@@ -89,6 +90,8 @@ const visit = {
 // ---------- ふきだし ----------
 let bubbleTimer = 0;
 function say(text, ms = 3200) {
+  // 窓が ひらいている ときは 窓の ほうを 読む（ふきだしは 見た目だけ）
+  bubbleEl.setAttribute('aria-hidden', String(!winClosed));
   bubbleEl.textContent = text;
   bubbleEl.classList.add('show');
   clearTimeout(bubbleTimer);
@@ -117,10 +120,15 @@ function onMarcy() {
 }
 const activate = (node, fn) => {
   node.addEventListener('click', (e) => { e.stopPropagation(); fn(); });
-  node.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fn(); } });
+  node.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); fn(); } });
 };
 activate(hut.marcy, onMarcy);
-const onSign = () => { sound.unlock(); if (winClosed) openTalk(false); scene(howto); };
+const onSign = () => {
+  sound.unlock();
+  // とじていたら もどりさきに メニューを おいておく（もどれなく ならないように）
+  if (winClosed) { openTalk(false); history.length = 0; history.push(menu); }
+  scene(howto);
+};
 activate(hut.sign, onSign);
 
 // ---------- 3D（かたむけると 庭に 立っている みたいに） ----------
@@ -158,6 +166,8 @@ let after = null;
 const page = (...parts) => ({ ja: parts.map((p) => (typeof p === 'string' ? p : p.ja)).join('\n'), en: parts.map((p) => (typeof p === 'string' ? p : p.en)).join('\n') });
 
 function showLines(lines, then) {
+  // うちかけの 行は すてて、あたらしい ばめんを すぐ 出す
+  if (typing) { clearTimeout(typing.timer); typing = null; }
   queue = lines.slice();
   after = then || null;
   hideMenu();
@@ -259,12 +269,16 @@ function moveCursor(e) {
 
 // ---------- ばめん と もどる ----------
 const history = [];
+let goTimer = 0; // 「いってらっしゃい！」の あとで へやを ひらく タイマー
+const cancelGo = () => { clearTimeout(goTimer); goTimer = 0; };
 function scene(fn) {
+  cancelGo();
   history.push(fn);
   backBtn.hidden = history.length <= 1;
   fn();
 }
 function goBack() {
+  cancelGo();
   if (history.length <= 1) return;
   history.pop();
   backBtn.hidden = history.length <= 1;
@@ -281,8 +295,9 @@ backBtn.addEventListener('click', (e) => { e.stopPropagation(); goBack(); });
 // キーボード（PC版の 窓と おなじ: Enter/Space/E = けってい、Esc/Backspace = もどる、↑↓ = カーソル）
 document.addEventListener('keydown', (e) => {
   if (!sheetEl.hidden) { if (e.key === 'Escape') { e.preventDefault(); closeSheet(); } return; }
-  const tag = (document.activeElement && document.activeElement.tagName) || '';
-  const onItem = tag === 'BUTTON' || tag === 'A';
+  // ボタンや リンク、role="button" の 絵（まーしー・かんばん）に いるときは、そちらに まかせる
+  const ae = document.activeElement;
+  const onItem = !!(ae && ae.closest && ae.closest('button, a, [role="button"]'));
   if (['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight'].includes(e.key) && !menuEl.hidden) { moveCursor(e); return; }
   if ((e.key === 'Enter' || e.key === ' ' || e.key === 'e') && !onItem) {
     e.preventDefault();
@@ -299,12 +314,16 @@ document.addEventListener('keydown', (e) => {
 // ---------- 窓を とじる / ひらく ----------
 let winClosed = false;
 function closeTalk() {
+  cancelGo();
+  if (typing) { clearTimeout(typing.timer); typing = null; }
+  queue = []; after = null;
   winClosed = true;
   history.length = 0;
   winEl.classList.add('closed');
   talkBtn.hidden = false;
   hideMenu();
   lineEl.textContent = '';
+  srLine.textContent = '';
   moreEl.classList.remove('on');
   backBtn.hidden = true;
 }
@@ -320,7 +339,8 @@ talkBtn.addEventListener('click', (e) => { e.stopPropagation(); sound.unlock(); 
 function mainMenuItems() {
   return TALK.menu.map((c) => ({
     label: t(c.label),
-    action: () => scene({ howto, rooms: roomsList, works: worksAsk, about, bye }[c.id]),
+    // さくひん は PC版と おなじく ことば なしで いちらんを ひらく（メニューは そのまま）
+    action: () => (c.id === 'works' ? openWorksList() : scene({ howto, rooms: roomsList, about, bye }[c.id])),
   }));
 }
 
@@ -328,28 +348,35 @@ function mainMenuItems() {
 function opening() {
   const pages = [];
   const visited = visit.rooms.length > 0;
-  if (!visit.talked) {
+  const first = !visit.talked;
+  if (first) {
     pages.push(page(TALK.hello, TALK.intro), randomMurmur());
-    visit.talked = true;
   } else {
     pages.push(page(TALK.hello, randomMurmur()));
     if (visited) pages.push(SITE.contact.pdf ? TALK.farewellPdf : TALK.farewell);
   }
   say(t(TALK.hello), 2400);
-  showLines(pages, thenMenu(() => showMenu(mainMenuItems())));
+  showLines(pages, thenMenu(() => {
+    // あいさつが おわってから「はなした」に する。もどる で あいさつを くりかえさない ように、そこを メニューに かえる
+    visit.talked = true;
+    if (history[0] === opening) history[0] = menu;
+    showMenu(mainMenuItems());
+  }));
 }
 
 function menu() {
   showLines([TALK.menuAgain], thenMenu(() => showMenu(mainMenuItems())));
 }
 
+// あそびかたの あとは PC版と おなじく「ほかに ききたいことは ある？」へ
+function menuPc() {
+  showLines([TALK.menuAgain], thenMenu(() => showMenu([...mainMenuItems(), { label: t(UI.openPc), href: SITE.pcUrl }])));
+}
 function howto() {
-  showLines(TALK.howto, thenMenu(() => {
-    const items = [];
-    if (SITE.pcUrl) items.push({ label: t(UI.openPc), href: SITE.pcUrl });
-    items.push({ label: t(UI.back), action: goBack });
-    showMenu(items, { oneCol: true });
-  }));
+  showLines(TALK.howto, () => {
+    history.length = 0;
+    scene(SITE.pcUrl ? menuPc : menu);
+  });
 }
 
 function roomItems(onPick) {
@@ -366,15 +393,24 @@ function roomsList() {
   ], { oneCol: true })));
 }
 
+const ledeOf = (r, l) => (r.lede == null ? '' : typeof r.lede === 'string' ? r.lede : (r.lede[l] || ''));
 function roomLede(r) {
   // じゅんびちゅうの へやは、ことばに まだ なければ たす（PC版と おなじ）
-  const lede = { ja: r.lede.ja, en: r.lede.en };
-  if (r.soon && !lede.ja.includes(UI.soon.ja)) { lede.ja += `\n${UI.soon.ja}`; lede.en += `\n${UI.soon.en}`; }
+  const lede = { ja: ledeOf(r, 'ja'), en: ledeOf(r, 'en') };
+  if (r.soon && !lede.ja.includes(UI.soon.ja)) {
+    lede.ja = [lede.ja, UI.soon.ja].filter(Boolean).join('\n');
+    lede.en = [lede.en, UI.soon.en].filter(Boolean).join('\n');
+  }
   return lede;
 }
 function roomPage(id) {
   const r = roomById[id];
-  showLines([page({ ja: roomLabelFor(r, 'ja'), en: roomLabelFor(r, 'en') }, roomLede(r))], thenMenu(() => showMenu([
+  const lede = roomLede(r);
+  const text = {
+    ja: [roomLabelFor(r, 'ja'), lede.ja].filter(Boolean).join('\n'),
+    en: [roomLabelFor(r, 'en'), lede.en].filter(Boolean).join('\n'),
+  };
+  showLines([text], thenMenu(() => showMenu([
     { label: t(TALK.take), action: () => goTo(id) },
     { label: t(UI.back), action: goBack },
   ], { oneCol: true })));
@@ -384,7 +420,8 @@ const roomLabelFor = (r, l) => (r.no ? `${circled(r.no)} ${r.name[l]}` : r.name[
 function goTo(id) {
   showLines([TALK.going], null);
   sound.open();
-  setTimeout(() => openRoom(id), reduceMotion ? 0 : 900);
+  cancelGo();
+  goTimer = setTimeout(() => { goTimer = 0; openRoom(id); }, reduceMotion ? 0 : 900);
 }
 
 // かべの とびらを タップ → 「① 解築停留所の とびらだ。… はいる？」
@@ -394,28 +431,22 @@ function doorPrompt(id) {
   sound.unlock(); sound.select();
   if (winClosed) openTalk(false);
   if (!sheetEl.hidden) closeSheet(true);
+  // とびらの はなしが つづけて つみかさならない ように、上の とびらは いれかえる
+  if (history.length && history[history.length - 1].door) history.pop();
   if (!history.length) history.push(menu);
-  scene(() => {
+  const fn = () => {
     const lede = roomLede(r);
     const text = {
-      ja: `${roomLabelFor(r, 'ja')}${TALK.door.is.ja}\n${lede.ja}\n${TALK.door.ask.ja}`,
-      en: `${roomLabelFor(r, 'en')}${TALK.door.is.en}\n${lede.en}\n${TALK.door.ask.en}`,
+      ja: [`${roomLabelFor(r, 'ja')}${TALK.door.is.ja}`, lede.ja, TALK.door.ask.ja].filter(Boolean).join('\n'),
+      en: [`${roomLabelFor(r, 'en')}${TALK.door.is.en}`, lede.en, TALK.door.ask.en].filter(Boolean).join('\n'),
     };
     showLines([text], thenMenu(() => showMenu([
       { label: t(TALK.enter), action: () => openRoom(id) },
       { label: t(TALK.cancel), action: goBack },
     ])));
-  });
-}
-
-function worksAsk() {
-  showLines([TALK.worksAsk], thenMenu(() => {
-    openWorksList();
-    showMenu([
-      ...WORKS.map((w) => ({ label: t(w.title), tag: w.hero ? '★' : '', color: roomById[w.room]?.color, action: () => openWork(w.id) })),
-      { label: t(UI.back), action: goBack },
-    ], { oneCol: true });
-  }));
+  };
+  fn.door = id;
+  scene(fn);
 }
 
 function about() {
@@ -467,7 +498,11 @@ function closeSheet(silent = false) {
   if (sheetEl.hidden) return;
   sheetEl.hidden = true;
   if (!silent) sound.back();
-  if (lastFocus && lastFocus.focus && document.contains(lastFocus)) lastFocus.focus({ preventScroll: true });
+  // まえの ばしょが きえていたら、窓（メニュー）か「はなす」に もどす
+  const target = (lastFocus && lastFocus.focus && lastFocus !== document.body && document.contains(lastFocus))
+    ? lastFocus
+    : (winClosed ? talkBtn : (menuEl.querySelector('.item.cur') || winEl));
+  target.focus({ preventScroll: true });
 }
 $('#sheetClose').addEventListener('click', () => closeSheet());
 sheetEl.addEventListener('click', (e) => { if (e.target === sheetEl) closeSheet(); });
@@ -499,14 +534,21 @@ function workRowHTML(w) {
   </button></li>`;
 }
 
+// PC版と おなじ: 「① 解築停留所(教室)」/「① Kaichiku Teiryujo (Classroom)」
+function roomVal(w, r) {
+  if (!r) return '';
+  if (r.id === 'garden') return t(UI.garden);
+  const spot = t(w.spot);
+  return roomLabel(r) + (spot ? (lang === 'ja' ? `(${spot})` : ` (${spot})`) : '');
+}
+
 function workHTML(w) {
   const r = roomById[w.room];
   const rows = [
     [t(UI.year), w.year],
     [t(UI.place), t(w.place)],
     [t(UI.format), t(w.format)],
-    [t(UI.room), r ? (r.id === 'garden' ? t(UI.garden) : roomLabel(r)) : ''],
-    [t(UI.spot), t(w.spot)],
+    [t(UI.room), roomVal(w, r)],
   ].filter(([, v]) => v);
   const sub = t(w.subtitle);
   return `
@@ -560,7 +602,7 @@ function openRoom(id) {
   openSheet(`
     <p class="work-kicker">${r.no ? esc(circled(r.no)) : '✿'} ${r.soon ? `<span class="star">${esc(t(UI.soon))}</span>` : ''}</p>
     <h2 class="work-title" id="sheetTitle">${esc(t(r.name))}</h2>
-    <p class="work-lede">${br(t(r.lede))}</p>
+    ${t(r.lede) ? `<p class="work-lede">${br(t(r.lede))}</p>` : ''}
     ${inside}
     ${r.id !== 'garden' ? `<p class="pc-note">${esc(t(UI.pcOnly))}${SITE.pcUrl ? ` <a href="${esc(SITE.pcUrl)}">${esc(t(UI.openPc))} →</a>` : ''}</p>` : ''}
   `, { color: r.color, kind: 'room' });
@@ -587,7 +629,8 @@ $('#langToggle').addEventListener('click', () => {
   store.set('niwa.lang', lang);
   applyLang();
   closeSheet(true);
-  if (!winClosed && history.length) { if (typing) { clearTimeout(typing.timer); typing = null; } history[history.length - 1](); }
+  cancelGo();
+  if (!winClosed && history.length) history[history.length - 1]();
 });
 
 // ---------- おと ----------
