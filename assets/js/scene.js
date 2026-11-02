@@ -34,46 +34,330 @@ export function renderDome(svg, rooms, onDoor) {
   el('path', { class: 'ground-edge', d: 'M0 352 Q200 326 400 352 L400 400 L0 400 Z' }, svg);
   el('path', { class: 'ground', d: 'M0 358 Q200 334 400 358 L400 400 L0 400 Z' }, svg);
 
-  // とびら（左右のかべぎわ、高さちがいの踊り場）
-  const spots = [
-    { x: 30, y: 300 }, { x: 370, y: 240 }, { x: 44, y: 180 }, { x: 356, y: 128 }, { x: 96, y: 92 },
-  ];
-  rooms.forEach((room, i) => {
-    const s = spots[i % spots.length];
-    const d = el('g', {
-      class: 'door', tabindex: '-1', 'data-room': room.id,
-      transform: `translate(${s.x} ${s.y})`, style: 'cursor:pointer',
-    }, svg);
-    // 踊り場
-    el('rect', { x: -20, y: 22, width: 40, height: 5, rx: 2, fill: 'var(--frame)', opacity: '.9' }, d);
-    // アーチの とびら
-    el('path', { d: 'M-11 22 L-11 2 A11 11 0 0 1 11 2 L11 22 Z', fill: room.color, stroke: 'var(--window-edge)', 'stroke-width': 2 }, d);
-    el('circle', { cx: 6, cy: 13, r: 1.6, fill: 'var(--window-edge)' }, d);
-    // 番号
-    el('circle', { cx: 0, cy: -16, r: 8, fill: 'var(--window-bg)', stroke: 'var(--window-edge)', 'stroke-width': 1.5 }, d);
-    const t = el('text', { x: 0, y: -12, 'text-anchor': 'middle', 'font-size': 11, fill: 'var(--window-edge)', 'font-family': 'DotGothic16, sans-serif' }, d);
-    t.textContent = String(room.no);
-    d.addEventListener('click', () => onDoor && onDoor(room.id));
-  });
+  // とびら は renderDoors（HTML の ボタン）で 置く。
+  // SVG の なかに 置くと、背の ひくい 画面で 上の とびらが 切れて 押せなくなるため。
 }
 
-// 小屋と まーしー
+// とびら（左右の かべぎわ、高さちがいの 踊り場）。ステージに たいする % で 置く 本物の ボタン。
+// 位置は 左右の かべに ジグザグ（PC版の 温室で 階段を のぼると とびらが ならぶ イメージ）。
+const DOOR_SPOTS = [
+  { side: 'left', x: 4, y: 72 },
+  { side: 'right', x: 4, y: 58 },
+  { side: 'left', x: 7, y: 42 },
+  { side: 'right', x: 8, y: 26 },
+  { side: 'left', x: 15, y: 13 },
+];
+export function renderDoors(container, rooms, onDoor, labelOf) {
+  container.textContent = '';
+  rooms.forEach((room, i) => {
+    const s = DOOR_SPOTS[i % DOOR_SPOTS.length];
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'door';
+    b.dataset.room = room.id;
+    b.style.setProperty('--door', room.color);
+    b.style[s.side] = `${s.x}%`;
+    b.style.top = `${s.y}%`;
+    b.setAttribute('aria-label', labelOf(room));
+    b.innerHTML = `<span class="door-no" aria-hidden="true">${room.no}</span>`
+      + '<svg viewBox="-20 -6 40 34" aria-hidden="true">'
+      + '<rect x="-19" y="22" width="38" height="5" rx="2" fill="var(--frame)" stroke="var(--window-edge)" stroke-width="1.5"/>'
+      + `<path d="M-11 22 L-11 2 A11 11 0 0 1 11 2 L11 22 Z" fill="${room.color}" stroke="var(--window-edge)" stroke-width="2.2"/>`
+      + '<path d="M-7 20 L-7 3 A7 7 0 0 1 0 -4" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="2" stroke-linecap="round"/>'
+      + '<circle cx="6" cy="13" r="1.8" fill="var(--window-edge)"/></svg>';
+    b.addEventListener('click', (e) => { e.stopPropagation(); onDoor && onDoor(room.id); });
+    container.append(b);
+  });
+  return { relabel() { container.querySelectorAll('.door').forEach((b, i) => b.setAttribute('aria-label', labelOf(rooms[i]))); } };
+}
+
+// 小屋と まーしー（NIWA lab candy：ティールの柱・マゼンタとラベンダーの ひさし・ピンクの カウンター）
+const INK = 'var(--window-edge)';
+const HUT = {
+  teal: '#2fb9a0', tealDark: '#177d79', magenta: '#d5087e', lav: '#b9a6e6',
+  wallTop: '#f7c4d4', wall: '#e99eb7', side: '#f3b7c8', top: '#f7d3e3', counter: '#f0a8c4', counterDark: '#cf6e97',
+  cream: '#fbeef0', signText: '#c2186b', pot: '#e4552d', potDark: '#b23a1c', indigo: '#280d88',
+  hair: '#2d1420', skin: '#ffe2d2', cheek: '#ef6b84', dress: '#b58ae6', dressDark: '#8a62cf', leaf: '#3f8f4a',
+};
+const line = (w = 3) => ({ stroke: INK, 'stroke-width': w, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' });
+
+// つやつやの ティールの柱・梁（ネイルみたいな光）
+function tealBar(parent, x, y, w, h, vertical = true) {
+  const g = el('g', {}, parent);
+  el('rect', { x, y, width: w, height: h, rx: 3, fill: HUT.teal }, g);
+  if (vertical) {
+    el('rect', { x: x + w * .6, y, width: w * .4, height: h, fill: HUT.tealDark, opacity: .6 }, g);
+    el('path', { d: `M${x + w * .3} ${y + 7} L${x + w * .3} ${y + h * .42} M${x + w * .3} ${y + h * .5} L${x + w * .3} ${y + h * .56}`, stroke: '#fff', 'stroke-width': Math.min(3, w * .2), 'stroke-linecap': 'round', opacity: .7 }, g);
+  } else {
+    el('rect', { x, y: y + h * .6, width: w, height: h * .4, fill: HUT.tealDark, opacity: .6 }, g);
+    el('path', { d: `M${x + 10} ${y + h * .3} L${x + w * .55} ${y + h * .3} M${x + w * .6} ${y + h * .3} L${x + w * .64} ${y + h * .3}`, stroke: '#fff', 'stroke-width': Math.min(3, h * .22), 'stroke-linecap': 'round', opacity: .65 }, g);
+  }
+  el('rect', { x, y, width: w, height: h, rx: 3, fill: 'none', ...line(3) }, g);
+  return g;
+}
+
+// ステッカー（白いふち＋インクの線）
+function sticker(parent, tag, attrs, fill) {
+  const g = el('g', {}, parent);
+  el(tag, { ...attrs, fill: INK, stroke: INK, 'stroke-width': 7, 'stroke-linejoin': 'round' }, g);
+  el(tag, { ...attrs, fill: '#fff', stroke: '#fff', 'stroke-width': 4, 'stroke-linejoin': 'round' }, g);
+  el(tag, { ...attrs, fill }, g);
+  return g;
+}
+
+const HEART = (x, y, s) => `M${x} ${y + s * .9} C${x - s * 1.4} ${y} ${x - s * 1.1} ${y - s * 1.1} ${x} ${y - s * .35} C${x + s * 1.1} ${y - s * 1.1} ${x + s * 1.4} ${y} ${x} ${y + s * .9} Z`;
+const STAR = (x, y, r) => {
+  let d = '';
+  for (let i = 0; i < 10; i++) {
+    const a = -Math.PI / 2 + (i * Math.PI) / 5, rr = i % 2 ? r * .5 : r;
+    d += `${i ? 'L' : 'M'}${(x + Math.cos(a) * rr).toFixed(1)} ${(y + Math.sin(a) * rr).toFixed(1)} `;
+  }
+  return d + 'Z';
+};
+
+// ころんとした花（鉢・地面 どちらにも）
+function chunkyFlower(parent, x, y, petal, r = 4.6) {
+  for (let i = 0; i < 5; i++) {
+    const a = -Math.PI / 2 + (i / 5) * Math.PI * 2;
+    el('circle', { cx: x + Math.cos(a) * r * 1.15, cy: y + Math.sin(a) * r * 1.15, r, fill: petal, ...line(1.4) }, parent);
+  }
+  el('circle', { cx: x, cy: y, r: r * .62, fill: '#ffd23a', ...line(1.4) }, parent);
+}
+
+// 植木鉢（テラコッタ）
+function flowerPot(parent, x, base, flowers) {
+  const g = el('g', {}, parent);
+  flowers.forEach(([dx, dy, c]) => {
+    el('path', { d: `M${x} ${base - 18} Q${x + dx * .4} ${base - 26} ${x + dx} ${base - 18 - dy}`, fill: 'none', stroke: HUT.leaf, 'stroke-width': 2.6, 'stroke-linecap': 'round' }, g);
+  });
+  el('path', { d: `M${x - 2} ${base - 22} C${x - 12} ${base - 30} ${x - 16} ${base - 24} ${x - 13} ${base - 20} C${x - 9} ${base - 18} ${x - 5} ${base - 19} ${x - 2} ${base - 22} Z`, fill: '#6fcf6a', ...line(1.4) }, g);
+  el('path', { d: `M${x + 2} ${base - 24} C${x + 12} ${base - 32} ${x + 16} ${base - 26} ${x + 13} ${base - 22} C${x + 9} ${base - 20} ${x + 5} ${base - 21} ${x + 2} ${base - 24} Z`, fill: '#8fe07c', ...line(1.4) }, g);
+  flowers.forEach(([dx, dy, c]) => chunkyFlower(g, x + dx, base - 18 - dy, c, 4.2));
+  el('path', { d: `M${x - 11} ${base - 14} L${x + 11} ${base - 14} L${x + 8.5} ${base} L${x - 8.5} ${base} Z`, fill: HUT.pot, ...line(2.6) }, g);
+  el('path', { d: `M${x + 4} ${base - 13} L${x + 2.5} ${base - 1}`, stroke: HUT.potDark, 'stroke-width': 3, 'stroke-linecap': 'round', opacity: .6 }, g);
+  el('rect', { x: x - 14, y: base - 20, width: 28, height: 7, rx: 2.5, fill: HUT.pot, ...line(2.6) }, g);
+  el('path', { d: `M${x - 10} ${base - 17.5} L${x - 2} ${base - 17.5}`, stroke: '#ffb08f', 'stroke-width': 2, 'stroke-linecap': 'round' }, g);
+  return g;
+}
+
 export function renderHut(container, { signText = 'ヒント' } = {}) {
   container.textContent = '';
   const svg = el('svg', { viewBox: '0 0 400 400', role: 'img', 'aria-hidden': 'true' }, container);
+  const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const defs = el('defs', {}, svg);
-  const holo = el('linearGradient', { id: 'holo', x1: 0, y1: 0, x2: 1, y2: 1 }, defs);
-  [['0', '#ffd6f2'], ['.35', '#c9f6ff'], ['.7', '#fff3b8'], ['1', '#e3d4ff']].forEach(([o, c]) => el('stop', { offset: o, 'stop-color': c }, holo));
-  const wood = el('linearGradient', { id: 'wood', x1: 0, y1: 0, x2: 0, y2: 1 }, defs);
-  [['0', '#f2c58f'], ['1', '#d99a5b']].forEach(([o, c]) => el('stop', { offset: o, 'stop-color': c }, wood));
-  const inside = el('radialGradient', { id: 'inside', cx: '.5', cy: '.4', r: '.8' }, defs);
-  [['0', '#fff1c9'], ['1', '#ffcf86']].forEach(([o, c]) => el('stop', { offset: o, 'stop-color': c }, inside));
+  const grad = (tag, id, attrs, stops) => {
+    const gr = el(tag, { id, ...attrs }, defs);
+    stops.forEach(([o, c, op = 1]) => el('stop', { offset: o, 'stop-color': c, 'stop-opacity': op }, gr));
+  };
+  grad('linearGradient', 'hut-wall', { x1: 0, y1: 0, x2: 0, y2: 1 }, [['0', HUT.wallTop], ['1', HUT.wall]]);
+  grad('radialGradient', 'hut-glow', { cx: '.5', cy: '.5', r: '.5' }, [['0', '#fff6dc', .95], ['.5', '#ffe9c4', .45], ['1', '#ffe9c4', 0]]);
+  grad('radialGradient', 'hut-bell', { cx: '.35', cy: '.3', r: '.8' }, [['0', '#ffffff'], ['.35', '#dfe6ff'], ['.7', '#c7b6f2'], ['1', '#8fa0c8']]);
+  grad('linearGradient', 'hut-holo', { x1: 0, y1: 0, x2: 1, y2: 0 }, [['0', '#ffb3e6'], ['.33', '#b3f0ff'], ['.66', '#fff1a8'], ['1', '#d9c2ff']]);
+  grad('radialGradient', 'hut-beacon', { cx: '.5', cy: '.5', r: '.5' }, [['0', '#8fe6ff', .8], ['1', '#42b8e2', 0]]);
 
   // かげ
-  el('ellipse', { cx: 200, cy: 352, rx: 132, ry: 14, fill: 'rgba(40,30,60,.18)' }, svg);
+  el('ellipse', { cx: 200, cy: 349, rx: 156, ry: 11, fill: 'rgba(40,30,60,.22)' }, svg);
 
-  // 双葉と花（左右）
+  // 赤い糸（小屋の よこから そとへ。ノードと結び目）
+  const threads = el('g', { fill: 'none', stroke: 'var(--thread)', 'stroke-width': 2.2, 'stroke-linecap': 'round' }, svg);
+  el('path', { d: 'M64 186 C44 192 30 206 4 214' }, threads);
+  el('path', { d: 'M64 300 C42 296 24 282 2 284', 'stroke-width': 1.6, opacity: .8 }, threads);
+  el('path', { d: 'M336 172 C360 166 376 150 398 144' }, threads);
+  el('path', { d: 'M336 292 C358 290 378 304 398 300', 'stroke-width': 1.6, opacity: .8 }, threads);
+  // 結び目（小さな わ）
+  [[30, 203], [372, 154]].forEach(([x, y]) => {
+    el('path', { d: `M${x - 4} ${y + 2} C${x - 6} ${y - 7} ${x + 6} ${y - 7} ${x + 4} ${y + 2} C${x + 2} ${y + 5} ${x - 2} ${y + 5} ${x - 4} ${y + 2} Z`, 'stroke-width': 2 }, threads);
+  });
+  [[64, 186], [336, 172], [64, 300], [336, 292]].forEach(([cx, cy]) => el('circle', { cx, cy, r: 4, fill: 'var(--thread)', stroke: INK, 'stroke-width': 1.2 }, svg));
+
+  const hut = el('g', { class: 'hut' }, svg);
+
+  // ---- なか（おく の かべ・天井・よこの かべ） ----
+  const inner = el('g', {}, hut);
+  el('rect', { x: 78, y: 156, width: 244, height: 100, fill: 'url(#hut-wall)' }, inner);
+  // よこの かべ（てまえが あかるい）
+  el('path', { d: 'M78 156 L118 172 L118 256 L78 256 Z', fill: HUT.side }, inner);
+  el('path', { d: 'M322 156 L282 172 L282 256 L322 256 Z', fill: HUT.side }, inner);
+  // 天井（マゼンタと クリームの しま）
+  for (let i = 0; i < 8; i++) {
+    const a = 78 + i * 30.5, b = 78 + (i + 1) * 30.5, c = 118 + i * 20.5, d = 118 + (i + 1) * 20.5;
+    el('path', { d: `M${a} 156 L${b} 156 L${d} 172 L${c} 172 Z`, fill: i % 2 ? '#f6dccf' : HUT.magenta }, inner);
+  }
+  // おくの かどの ティールの ふち
+  el('path', { d: 'M118 172 L282 172 M118 172 L118 256 M282 172 L282 256', stroke: HUT.teal, 'stroke-width': 3.5, fill: 'none' }, inner);
+  // ランプの あかり
+  el('ellipse', { class: 'hut-glow', cx: 166, cy: 196, rx: 70, ry: 54, fill: 'url(#hut-glow)' }, inner);
+  // まるい窓（ポートホール）
+  [[98, 198], [302, 198]].forEach(([cx, cy]) => {
+    el('ellipse', { cx, cy, rx: 10, ry: 16, fill: '#bfe9ff', stroke: HUT.teal, 'stroke-width': 5 }, inner);
+    el('ellipse', { cx, cy, rx: 12.5, ry: 18.5, fill: 'none', ...line(2) }, inner);
+    el('path', { d: `M${cx} ${cy - 14} L${cx} ${cy + 14} M${cx - 8} ${cy} L${cx + 8} ${cy}`, stroke: HUT.teal, 'stroke-width': 2.4 }, inner);
+    el('path', { d: `M${cx - 4} ${cy - 9} Q${cx - 6} ${cy - 4} ${cx - 5} ${cy}`, stroke: '#fff', 'stroke-width': 1.8, fill: 'none', 'stroke-linecap': 'round', opacity: .9 }, inner);
+  });
+  // たな と コップ 7こ
+  el('path', { d: 'M142 216 L146 224 M262 216 L258 224', stroke: HUT.tealDark, 'stroke-width': 3, 'stroke-linecap': 'round' }, inner);
+  el('rect', { x: 124, y: 211, width: 156, height: 6, rx: 2, fill: HUT.teal, ...line(2) }, inner);
+  [[134, '#ff7eb6'], [148, '#ffc23a'], [162, '#9d6bff'], [238, '#fdf7ff'], [251, '#ff3b4e'], [264, '#ff9cc8'], [276, '#6f6bff']].forEach(([x, c]) => {
+    el('path', { d: `M${x - 4.5} 198 L${x + 4.5} 198 L${x + 3.6} 211 L${x - 3.6} 211 Z`, fill: c, ...line(1.6) }, inner);
+    el('path', { d: `M${x - 2} 201 L${x - 1.6} 207`, stroke: '#fff', 'stroke-width': 1.4, 'stroke-linecap': 'round', opacity: .8 }, inner);
+  });
+  // ペンダントランプ
+  el('path', { d: 'M166 156 L166 172', stroke: INK, 'stroke-width': 1.6 }, inner);
+  el('circle', { cx: 166, cy: 183, r: 4.6, fill: '#fff3d6', ...line(1.6) }, inner);
+  el('path', { d: 'M161 172 L171 172 L177 181 L155 181 Z', fill: '#f26aa6', ...line(2) }, inner);
+  el('path', { d: 'M162 175 L159 179', stroke: '#fff', 'stroke-width': 1.6, 'stroke-linecap': 'round', opacity: .8 }, inner);
+
+  // ---- まーしー（3頭身・ながい黒髪・ラベンダーの ワンピース・手をふる） ----
+  const m = el('g', { class: 'marcy bob', id: 'marcy', role: 'button', tabindex: '0' }, svg);
+  const mx = 200;
+  // うしろ髪
+  el('path', { d: `M${mx - 27} 204 C${mx - 30} 182 ${mx - 16} 174 ${mx} 174 C${mx + 16} 174 ${mx + 30} 182 ${mx + 27} 204 L${mx + 32} 268 L${mx - 32} 268 Z`, fill: HUT.hair, ...line(3) }, m);
+  // ワンピース
+  el('path', { d: `M${mx - 15} 230 C${mx - 8} 226 ${mx + 8} 226 ${mx + 15} 230 L${mx + 25} 272 L${mx - 25} 272 Z`, fill: HUT.dress, ...line(3) }, m);
+  el('path', { d: `M${mx + 9} 236 L${mx + 16} 270`, stroke: HUT.dressDark, 'stroke-width': 4, 'stroke-linecap': 'round', opacity: .55 }, m);
+  el('path', { d: `M${mx - 7} 229 Q${mx} 235 ${mx + 7} 229`, fill: 'none', stroke: '#fff', 'stroke-width': 2, 'stroke-linecap': 'round' }, m);
+  // おろした うで（みぎがわ）
+  el('path', { d: `M${mx + 19} 238 L${mx + 23} 258`, fill: 'none', stroke: INK, 'stroke-width': 8, 'stroke-linecap': 'round' }, m);
+  el('path', { d: `M${mx + 19} 238 L${mx + 23} 258`, fill: 'none', stroke: HUT.skin, 'stroke-width': 3.6, 'stroke-linecap': 'round' }, m);
+  el('circle', { cx: mx + 17, cy: 236, r: 7.5, fill: HUT.dress, ...line(2.6) }, m);
+  // ふってる うで（ひだりがわ）
+  const arm = el('g', { class: 'wave-arm' }, m);
+  const armD = `M${mx - 19} 238 Q${mx - 31} 232 ${mx - 35} 214`;
+  el('path', { d: armD, fill: 'none', stroke: INK, 'stroke-width': 8, 'stroke-linecap': 'round' }, arm);
+  el('path', { d: armD, fill: 'none', stroke: HUT.skin, 'stroke-width': 3.6, 'stroke-linecap': 'round' }, arm);
+  el('ellipse', { cx: mx - 36, cy: 209, rx: 5.2, ry: 6, fill: HUT.skin, ...line(2.4) }, arm);
+  el('path', { d: `M${mx - 39} 206 L${mx - 39} 203 M${mx - 36} 205 L${mx - 36} 202`, stroke: INK, 'stroke-width': 1.2, 'stroke-linecap': 'round' }, arm);
+  if (!reduce) {
+    el('animateTransform', { attributeName: 'transform', type: 'rotate', values: `0 ${mx - 19} 238;-16 ${mx - 19} 238;0 ${mx - 19} 238`, dur: '1.1s', repeatCount: 'indefinite' }, arm);
+  }
+  el('circle', { cx: mx - 17, cy: 236, r: 7.5, fill: HUT.dress, ...line(2.6) }, m);
+  // かお
+  el('ellipse', { cx: mx, cy: 206, rx: 23, ry: 21, fill: HUT.skin, ...line(3) }, m);
+  // まえがみ（ぱっつん）
+  el('path', { d: `M${mx - 24} 210 C${mx - 27} 186 ${mx - 14} 177 ${mx} 177 C${mx + 14} 177 ${mx + 27} 186 ${mx + 24} 210 L${mx + 20} 198 Q${mx + 15} 201 ${mx + 10} 197 Q${mx + 5} 201 ${mx} 197 Q${mx - 5} 201 ${mx - 10} 197 Q${mx - 15} 201 ${mx - 20} 198 Z`, fill: HUT.hair, ...line(3) }, m);
+  el('path', { d: `M${mx - 13} 185 Q${mx} 179 ${mx + 13} 185`, fill: 'none', stroke: '#8a5a72', 'stroke-width': 2.4, 'stroke-linecap': 'round', opacity: .8 }, m);
+  // め
+  const eyes = el('g', { class: 'blink' }, m);
+  el('ellipse', { cx: mx - 9, cy: 207, rx: 3.3, ry: 4.6, fill: INK }, eyes);
+  el('ellipse', { cx: mx + 9, cy: 207, rx: 3.3, ry: 4.6, fill: INK }, eyes);
+  el('circle', { cx: mx - 8, cy: 205.3, r: 1.3, fill: '#fff' }, eyes);
+  el('circle', { cx: mx + 10, cy: 205.3, r: 1.3, fill: '#fff' }, eyes);
+  // ほっぺ・くち
+  el('ellipse', { cx: mx - 15, cy: 214, rx: 4.4, ry: 2.8, fill: HUT.cheek, opacity: .7 }, m);
+  el('ellipse', { cx: mx + 15, cy: 214, rx: 4.4, ry: 2.8, fill: HUT.cheek, opacity: .7 }, m);
+  el('path', { d: `M${mx - 3} 215.5 Q${mx} 219 ${mx + 3} 215.5`, fill: 'none', stroke: '#c2185b', 'stroke-width': 1.8, 'stroke-linecap': 'round' }, m);
+
+  // ---- 前の わく・カウンター ----
+  const front = el('g', { class: 'hut-front' }, svg);
+  // カウンターの前板（3まい）
+  el('rect', { x: 62, y: 262, width: 276, height: 74, fill: HUT.counter, ...line(3) }, front);
+  el('rect', { x: 63.5, y: 263.5, width: 273, height: 7, fill: HUT.counterDark, opacity: .45 }, front);
+  [[80, 146], [158, 242], [254, 320]].forEach(([a, b]) => {
+    el('path', { d: `M${a + 6} 330 L${b - 18} 274`, stroke: '#fff', 'stroke-width': 3, opacity: .22, 'stroke-linecap': 'round' }, front);
+  });
+  tealBar(front, 146, 262, 12, 74);
+  tealBar(front, 242, 262, 12, 74);
+  // 柱と梁
+  tealBar(front, 60, 138, 20, 208);
+  tealBar(front, 320, 138, 20, 208);
+  tealBar(front, 56, 138, 288, 20, false);
+  tealBar(front, 52, 334, 296, 14, false);
+  // カウンターの天板
+  el('rect', { x: 48, y: 248, width: 304, height: 15, rx: 5, fill: HUT.top, ...line(3) }, front);
+  el('path', { d: 'M56 252.5 L344 252.5', stroke: '#fff', 'stroke-width': 3, 'stroke-linecap': 'round', opacity: .6 }, front);
+  el('path', { d: 'M50 258 L350 258', stroke: HUT.counterDark, 'stroke-width': 1.5, opacity: .35 }, front);
+
+  // ステッカー
+  const st = el('g', { class: 'stickers' }, front);
+  sticker(st, 'path', { d: HEART(98, 291, 10) }, '#ff4f9a');
+  el('path', { d: 'M92 287 Q94 284 97 285', stroke: '#fff', 'stroke-width': 1.8, fill: 'none', 'stroke-linecap': 'round' }, st);
+  const orchid = el('g', {}, st);
+  const oval = (cx, cy, rx, ry) => `M${cx - rx} ${cy} a${rx} ${ry} 0 1 0 ${rx * 2} 0 a${rx} ${ry} 0 1 0 ${-rx * 2} 0 Z`;
+  sticker(orchid, 'path', { d: [oval(128, 305, 4, 5.5), oval(121, 311, 6, 5), oval(135, 311, 6, 5), oval(124, 318, 3.6, 4.6), oval(132, 318, 3.6, 4.6)].join(' ') }, '#f58ad8');
+  el('path', { d: 'M125 313 Q128 309 131 313 Q131 318 128 319 Q125 318 125 313 Z', fill: '#c2186b', stroke: INK, 'stroke-width': 1 }, orchid);
+  el('circle', { cx: 128, cy: 312, r: 1.4, fill: '#ffd23a' }, orchid);
+  const niwa = el('g', {}, st);
+  const niwaText = (attrs) => {
+    const t = el('text', { x: 200, y: 309, 'text-anchor': 'middle', 'font-size': 22, 'font-weight': 900, 'font-family': 'Arial Black, Zen Maru Gothic, sans-serif', 'letter-spacing': '1', ...attrs }, niwa);
+    t.textContent = 'NIWA';
+  };
+  niwaText({ fill: INK, stroke: INK, 'stroke-width': 8, 'stroke-linejoin': 'round' });
+  niwaText({ fill: '#fff', stroke: '#fff', 'stroke-width': 5, 'stroke-linejoin': 'round' });
+  niwaText({ fill: HUT.indigo, stroke: '#6f86ff', 'stroke-width': .8 });
+  sticker(st, 'path', { d: 'M232 284 Q233 289 238 290 Q233 291 232 296 Q231 291 226 290 Q231 289 232 284 Z' }, '#ffd23a');
+  sticker(st, 'path', { d: STAR(298, 290, 12) }, '#ffa62b');
+  el('circle', { cx: 294.5, cy: 290, r: 1.2, fill: INK }, st);
+  el('circle', { cx: 301.5, cy: 290, r: 1.2, fill: INK }, st);
+  el('path', { d: 'M295 293.5 Q298 296 301 293.5', fill: 'none', stroke: INK, 'stroke-width': 1.2, 'stroke-linecap': 'round' }, st);
+  sticker(st, 'rect', { x: 266, y: 307, width: 20, height: 16, rx: 3 }, '#1e1b5e');
+  [[271, 312], [279, 312]].forEach(([x, y]) => el('rect', { x, y, width: 2.2, height: 2.2, fill: '#5ff0ff' }, st));
+  el('path', { d: 'M272 317 L273.5 318.5 L278.5 318.5 L280 317', fill: 'none', stroke: '#5ff0ff', 'stroke-width': 1.4 }, st);
+  sticker(st, 'path', { d: HEART(330, 296, 5) }, '#ff4f9a');
+
+  // カウンターの うえ：植木鉢・よびりん
+  flowerPot(front, 102, 249, [[-6, 10, '#ff7eb6'], [5, 16, '#9d6bff'], [9, 4, '#ff3b4e']]);
+  flowerPot(front, 298, 249, [[-7, 6, '#ff3b4e'], [3, 15, '#ff9cc8'], [9, 6, '#ffc23a']]);
+  const bell = el('g', {}, front);
+  el('rect', { x: 227, y: 245, width: 24, height: 5, rx: 2, fill: '#6b5f9e', ...line(2) }, bell);
+  el('path', { d: 'M230 245 A9 9 0 0 1 248 245 Z', fill: 'url(#hut-bell)', ...line(2.2) }, bell);
+  el('circle', { cx: 239, cy: 234.5, r: 2.2, fill: '#dfe6ff', ...line(1.6) }, bell);
+  el('path', { d: 'M233.5 242 Q234 238 237 237', stroke: '#fff', 'stroke-width': 1.6, fill: 'none', 'stroke-linecap': 'round' }, bell);
+
+  // 梁から さがる ID バッジ（NIWA）
+  const badge = el('g', {}, front);
+  el('path', { d: 'M121 158 L127 182 L133 158', fill: 'none', stroke: HUT.magenta, 'stroke-width': 3, 'stroke-linejoin': 'round' }, badge);
+  el('circle', { cx: 127, cy: 183, r: 2.4, fill: 'none', stroke: '#e8b84a', 'stroke-width': 1.6 }, badge);
+  el('rect', { x: 119, y: 185, width: 16, height: 21, rx: 2.5, fill: '#3a2a9a', ...line(1.8) }, badge);
+  el('rect', { x: 120.5, y: 193, width: 13, height: 3, fill: 'url(#hut-holo)' }, badge);
+  el('circle', { cx: 127, cy: 201, r: 2.4, fill: 'none', stroke: '#e8b84a', 'stroke-width': 1 }, badge);
+  el('circle', { cx: 127, cy: 201, r: 1, fill: '#f06bd0' }, badge);
+  el('path', { d: 'M122 189 L132 189', stroke: '#fff', 'stroke-width': 1.6, 'stroke-linecap': 'round', opacity: .85 }, badge);
+
+  // ---- やね：しまの ひさし（ホタテの ふち）・玉かざり・青い ランプ ----
+  const roof = el('g', { class: 'hut-roof' }, svg);
+  const N = 9, T0 = 98, T1 = 302, B0 = 38, B1 = 362, TY = 98, BY = 132;
+  const tw = (T1 - T0) / N, bw = (B1 - B0) / N;
+  for (let i = 0; i < N; i++) {
+    const c = i % 2 ? HUT.lav : HUT.magenta;
+    el('path', { d: `M${T0 + i * tw} ${TY} L${T0 + (i + 1) * tw} ${TY} L${B0 + (i + 1) * bw} ${BY} L${B0 + i * bw} ${BY} Z`, fill: c }, roof);
+  }
+  el('path', { d: `M${T0 + 2} ${TY + 5} L${T1 - 2} ${TY + 5} L${T1 + 6} ${TY + 10} L${T0 - 6} ${TY + 10} Z`, fill: '#fff', opacity: .28 }, roof);
+  el('path', { d: `M${T0} ${TY} L${T1} ${TY} L${B1} ${BY} L${B0} ${BY} Z`, fill: 'none', ...line(3) }, roof);
+  for (let i = 0; i < N; i++) {
+    const c = i % 2 ? HUT.lav : HUT.magenta;
+    const a = B0 + i * bw, b = a + bw;
+    el('path', { d: `M${a} ${BY} A${bw / 2} ${bw / 2 * .8} 0 0 0 ${b} ${BY} Z`, fill: c, ...line(2.6) }, roof);
+    el('path', { d: `M${a + bw * .28} ${BY + 4} Q${a + bw * .34} ${BY + 9} ${a + bw * .46} ${BY + 11}`, fill: 'none', stroke: '#fff', 'stroke-width': 1.8, 'stroke-linecap': 'round', opacity: .5 }, roof);
+  }
+  [[T0 - 2, TY - 4], [T1 + 2, TY - 4]].forEach(([cx, cy]) => {
+    el('circle', { cx, cy, r: 7.5, fill: HUT.magenta, ...line(2.6) }, roof);
+    el('circle', { cx: cx - 2.4, cy: cy - 2.6, r: 2, fill: '#fff', opacity: .8 }, roof);
+  });
+  // 青い ランプ（よびだし）
+  el('circle', { cx: 282, cy: 86, r: 16, fill: 'url(#hut-beacon)' }, roof);
+  el('rect', { x: 271, y: 92, width: 22, height: 7, rx: 2.5, fill: '#2a3480', ...line(2.2) }, roof);
+  el('path', { d: 'M274 92 L274 85 A8 8 0 0 1 290 85 L290 92 Z', fill: '#3f8fe0', ...line(2.2) }, roof);
+  el('circle', { cx: 282, cy: 86, r: 3.2, fill: '#bff4ff' }, roof);
+  el('path', { d: 'M277 85 Q277.5 81 280.5 79.5', stroke: '#fff', 'stroke-width': 1.6, fill: 'none', 'stroke-linecap': 'round', opacity: .85 }, roof);
+
+  // ---- かんばん「ヒント」 ----
+  const sign = el('g', { class: 'hut-sign', id: 'hutSign', role: 'button', tabindex: '0' }, svg);
+  el('rect', { x: 134, y: 18, width: 132, height: 82, rx: 16, fill: HUT.teal, ...line(3) }, sign);
+  el('path', { d: 'M150 22 L250 22', stroke: '#fff', 'stroke-width': 2.4, 'stroke-linecap': 'round', opacity: .55 }, sign);
+  el('path', { d: 'M137 72 L137 84 Q137 96 150 97 L250 97 Q263 96 263 84 L263 72', fill: 'none', stroke: HUT.tealDark, 'stroke-width': 4, opacity: .6 }, sign);
+  el('rect', { x: 144, y: 27, width: 112, height: 64, rx: 10, fill: HUT.cream, stroke: HUT.magenta, 'stroke-width': 3 }, sign);
+  el('rect', { x: 144, y: 27, width: 112, height: 64, rx: 10, fill: 'none', ...line(1.4) }, sign);
+  el('path', { d: 'M152 34 L176 34', stroke: '#fff', 'stroke-width': 3, 'stroke-linecap': 'round' }, sign);
+  const signLabel = el('text', { x: 200, y: 71, 'text-anchor': 'middle', 'font-size': 32, 'font-weight': 700, fill: HUT.signText, style: 'font-family: var(--font-round)', 'letter-spacing': '2' }, sign);
+  signLabel.textContent = signText;
+  // 「？」バッジ
+  el('circle', { cx: 264, cy: 20, r: 12, fill: '#e77f92', ...line(2.6) }, sign);
+  el('circle', { cx: 260, cy: 15.5, r: 2.4, fill: '#fff', opacity: .7 }, sign);
+  const q = el('text', { x: 264, y: 26.5, 'text-anchor': 'middle', 'font-size': 17, 'font-weight': 700, fill: '#fff', style: 'font-family: var(--font-round)' }, sign);
+  q.textContent = '?';
+
+  // 双葉と花（地面）
   const plants = el('g', {}, svg);
   const sprout = (x, y, s = 1) => {
     const g = el('g', { class: 'sprout', transform: `translate(${x} ${y}) scale(${s})` }, plants);
@@ -84,112 +368,16 @@ export function renderHut(container, { signText = 'ヒント' } = {}) {
   const flower = (x, y, c, s = 1) => {
     const g = el('g', { class: 'sprout', transform: `translate(${x} ${y}) scale(${s})` }, plants);
     el('path', { d: 'M0 0 L0 -18', stroke: '#4f9a4a', 'stroke-width': 3, 'stroke-linecap': 'round' }, g);
-    for (let i = 0; i < 5; i++) {
-      const a = (i / 5) * Math.PI * 2;
-      el('circle', { cx: Math.cos(a) * 6, cy: -22 + Math.sin(a) * 6, r: 5, fill: c, stroke: 'var(--window-edge)', 'stroke-width': 1.2 }, g);
-    }
-    el('circle', { cx: 0, cy: -22, r: 3.6, fill: '#ffbe2e', stroke: 'var(--window-edge)', 'stroke-width': 1.2 }, g);
+    el('path', { d: 'M0 -6 C-8 -12 -12 -6 -9 -3 C-6 -1 -3 -3 0 -6 Z', fill: '#7fd36b', stroke: '#3d7d3a', 'stroke-width': 1.3 }, g);
+    chunkyFlower(g, 0, -22, c, 5);
   };
-  sprout(40, 360, 1.1); flower(74, 358, '#ff8cc6'); sprout(104, 366, .8);
-  sprout(300, 366, .85); flower(330, 360, '#9d7eff', 1.05); sprout(364, 362, 1.1); flower(18, 372, '#ffffff', .8);
-
-  // 小屋
-  const hut = el('g', { class: 'hut' }, svg);
-  // ゆか・土台
-  el('rect', { x: 92, y: 330, width: 216, height: 18, rx: 6, fill: '#b5774a', stroke: 'var(--window-edge)', 'stroke-width': 3 }, hut);
-  // 柱とかべ
-  el('rect', { x: 104, y: 196, width: 192, height: 140, rx: 8, fill: 'url(#wood)', stroke: 'var(--window-edge)', 'stroke-width': 3 }, hut);
-  // 板のすじ
-  for (let x = 124; x < 296; x += 20) el('path', { d: `M${x} 200 L${x} 334`, stroke: 'rgba(120,70,30,.25)', 'stroke-width': 2 }, hut);
-  // 窓口（なかが見える）
-  el('rect', { x: 128, y: 214, width: 144, height: 84, rx: 10, fill: 'url(#inside)', stroke: 'var(--window-edge)', 'stroke-width': 3 }, hut);
-  // 窓口のなかの棚（本・びん）
-  const shelf = el('g', {}, hut);
-  el('rect', { x: 136, y: 236, width: 128, height: 4, fill: '#c98d58' }, shelf);
-  [['#f23a9a', 140], ['#33d6b4', 150], ['#6f86ff', 158], ['#ffbe2e', 240], ['#9d7eff', 250]].forEach(([c, x]) => el('rect', { x, y: 222, width: 8, height: 14, rx: 2, fill: c, stroke: 'var(--window-edge)', 'stroke-width': 1 }, shelf));
-  el('circle', { cx: 230, cy: 229, r: 6, fill: '#c9f6ff', stroke: 'var(--window-edge)', 'stroke-width': 1 }, shelf);
-
-  // まーしー（3頭身・長い髪）
-  const m = el('g', { class: 'marcy bob', id: 'marcy', role: 'button', tabindex: '0' }, svg);
-  const mx = 200, my = 300;
-  // かみ（うしろ）
-  el('path', { d: `M${mx - 34} ${my - 58} C${mx - 46} ${my - 120} ${mx + 46} ${my - 120} ${mx + 34} ${my - 58} L${mx + 38} ${my - 14} C${mx + 20} ${my - 8} ${mx - 20} ${my - 8} ${mx - 38} ${my - 14} Z`, fill: '#3a2a3f', stroke: 'var(--window-edge)', 'stroke-width': 3 }, m);
-  // からだ
-  el('path', { d: `M${mx - 22} ${my} L${mx - 18} ${my - 32} C${mx - 10} ${my - 40} ${mx + 10} ${my - 40} ${mx + 18} ${my - 32} L${mx + 22} ${my} Z`, fill: '#9d7eff', stroke: 'var(--window-edge)', 'stroke-width': 3 }, m);
-  el('path', { d: `M${mx - 6} ${my - 36} L${mx} ${my - 28} L${mx + 6} ${my - 36}`, fill: 'none', stroke: '#fff', 'stroke-width': 2.5, 'stroke-linejoin': 'round' }, m);
-  // て（ふってる）
-  const arm = el('g', { class: 'wave-arm' }, m);
-  el('path', { d: `M${mx + 18} ${my - 28} Q${mx + 34} ${my - 40} ${mx + 36} ${my - 58}`, fill: 'none', stroke: 'var(--window-edge)', 'stroke-width': 9, 'stroke-linecap': 'round' }, arm);
-  el('path', { d: `M${mx + 18} ${my - 28} Q${mx + 34} ${my - 40} ${mx + 36} ${my - 58}`, fill: 'none', stroke: '#9d7eff', 'stroke-width': 4.5, 'stroke-linecap': 'round' }, arm);
-  el('circle', { cx: mx + 37, cy: my - 61, r: 6, fill: '#ffe0cc', stroke: 'var(--window-edge)', 'stroke-width': 2.5 }, arm);
-  // かお
-  el('ellipse', { cx: mx, cy: my - 66, rx: 30, ry: 28, fill: '#ffe6d6', stroke: 'var(--window-edge)', 'stroke-width': 3 }, m);
-  // まえがみ
-  el('path', { d: `M${mx - 31} ${my - 66} C${mx - 32} ${my - 98} ${mx + 32} ${my - 98} ${mx + 31} ${my - 66} C${mx + 20} ${my - 80} ${mx + 4} ${my - 84} ${mx - 2} ${my - 76} C${mx - 10} ${my - 84} ${mx - 22} ${my - 80} ${mx - 31} ${my - 66} Z`, fill: '#3a2a3f', stroke: 'var(--window-edge)', 'stroke-width': 3, 'stroke-linejoin': 'round' }, m);
-  // め
-  const eyes = el('g', { class: 'blink' }, m);
-  el('ellipse', { cx: mx - 11, cy: my - 62, rx: 3.6, ry: 5, fill: 'var(--window-edge)' }, eyes);
-  el('ellipse', { cx: mx + 11, cy: my - 62, rx: 3.6, ry: 5, fill: 'var(--window-edge)' }, eyes);
-  el('circle', { cx: mx - 10, cy: my - 64, r: 1.3, fill: '#fff' }, eyes);
-  el('circle', { cx: mx + 12, cy: my - 64, r: 1.3, fill: '#fff' }, eyes);
-  // ほっぺ・くち
-  el('ellipse', { cx: mx - 19, cy: my - 52, rx: 5, ry: 3, fill: '#ff9cc6', opacity: '.8' }, m);
-  el('ellipse', { cx: mx + 19, cy: my - 52, rx: 5, ry: 3, fill: '#ff9cc6', opacity: '.8' }, m);
-  el('path', { d: `M${mx - 5} ${my - 50} Q${mx} ${my - 45} ${mx + 5} ${my - 50}`, fill: 'none', stroke: 'var(--window-edge)', 'stroke-width': 2.2, 'stroke-linecap': 'round' }, m);
-  // 蘭の かみかざり
-  const orchid = el('g', { transform: `translate(${mx - 24} ${my - 88})` }, m);
-  [[-5, 0], [5, 0], [0, -6], [-4, 6], [4, 6]].forEach(([x, y]) => el('ellipse', { cx: x, cy: y, rx: 4.5, ry: 3.4, fill: '#f6b6ff', stroke: 'var(--window-edge)', 'stroke-width': 1.2 }, orchid));
-  el('circle', { cx: 0, cy: 1, r: 2.4, fill: '#ff33a8' }, orchid);
-
-  // カウンター（まーしーの こしから下を かくす）
-  el('rect', { x: 120, y: 294, width: 160, height: 20, rx: 6, fill: '#c98d58', stroke: 'var(--window-edge)', 'stroke-width': 3 }, svg);
-  el('rect', { x: 120, y: 294, width: 160, height: 6, rx: 3, fill: 'rgba(255,255,255,.35)' }, svg);
-
-  // やね
-  el('path', { d: 'M84 202 L200 130 L316 202 Z', fill: '#f23a9a', stroke: 'var(--window-edge)', 'stroke-width': 3, 'stroke-linejoin': 'round' }, svg);
-  for (let i = 0; i < 6; i++) {
-    const x1 = 100 + i * 20, x2 = 300 - i * 20;
-    if (x1 < x2) el('path', { d: `M${x1} ${202 - (i % 2) * 2} L${x2} ${202 - (i % 2) * 2}`, stroke: 'rgba(255,255,255,.0)' }, svg);
-  }
-  el('path', { d: 'M110 186 L200 130 L290 186', fill: 'none', stroke: 'rgba(255,255,255,.45)', 'stroke-width': 4, 'stroke-linecap': 'round' }, svg);
-  // ひさし
-  el('rect', { x: 78, y: 198, width: 244, height: 12, rx: 6, fill: '#ffbe2e', stroke: 'var(--window-edge)', 'stroke-width': 3 }, svg);
-
-  // かんばん「ヒント」
-  const sign = el('g', { class: 'hut-sign', id: 'hutSign', role: 'button', tabindex: '0' }, svg);
-  el('path', { d: 'M184 136 L184 120 M216 136 L216 120', stroke: 'var(--window-edge)', 'stroke-width': 3 }, sign);
-  el('rect', { x: 146, y: 88, width: 108, height: 36, rx: 10, fill: 'url(#holo)', stroke: 'var(--window-edge)', 'stroke-width': 3 }, sign);
-  const st = el('text', { x: 200, y: 114, 'text-anchor': 'middle', 'font-size': 22, fill: 'var(--window-edge)', 'font-family': 'DotGothic16, sans-serif', 'letter-spacing': '2' }, sign);
-  st.textContent = signText;
-
-  // ステッカー（小屋に ぺたぺた）
-  const stickers = el('g', {}, svg);
-  const sticker = (x, y, r, fill, label, rot = 0) => {
-    const g = el('g', { transform: `translate(${x} ${y}) rotate(${rot})` }, stickers);
-    el('circle', { r: r + 2.5, fill: '#fff', stroke: 'var(--window-edge)', 'stroke-width': 1.5 }, g);
-    el('circle', { r, fill }, g);
-    if (label) {
-      const t = el('text', { y: 4, 'text-anchor': 'middle', 'font-size': r * .95, fill: '#fff', 'font-family': 'DotGothic16, sans-serif' }, g);
-      t.textContent = label;
-    }
-  };
-  sticker(118, 318, 9, '#33d6b4', '★', -12);
-  sticker(286, 316, 10, '#6f86ff', '→', 10);
-  sticker(276, 224, 7, '#ff6a2b', '!', 8);
-  // 星形ステッカー
-  const star = el('path', { d: 'M0 -11 L3 -3 L11 -3 L5 2 L7 10 L0 5 L-7 10 L-5 2 L-11 -3 L-3 -3 Z', transform: 'translate(124 226) rotate(-8)', fill: '#ffbe2e', stroke: 'var(--window-edge)', 'stroke-width': 1.5 }, stickers);
-  star.setAttribute('stroke-linejoin', 'round');
-
-  // 赤い糸（小屋から そとへ。ノードと結び目）
-  el('path', { d: 'M296 250 C340 240 360 210 384 200', fill: 'none', stroke: 'var(--thread)', 'stroke-width': 2.2, 'stroke-linecap': 'round' }, svg);
-  el('path', { d: 'M104 262 C70 270 40 300 14 304', fill: 'none', stroke: 'var(--thread)', 'stroke-width': 2.2, 'stroke-linecap': 'round' }, svg);
-  el('circle', { cx: 296, cy: 250, r: 4, fill: 'var(--thread)', stroke: 'var(--window-edge)', 'stroke-width': 1.2 }, svg);
-  el('circle', { cx: 104, cy: 262, r: 4, fill: 'var(--thread)', stroke: 'var(--window-edge)', 'stroke-width': 1.2 }, svg);
+  sprout(26, 364, 1.1); flower(46, 372, '#ff8cc6', .95); flower(10, 380, '#ffffff', .75); sprout(78, 374, .75);
+  sprout(322, 374, .8); flower(352, 370, '#9d7eff', 1); sprout(376, 362, 1.1); flower(390, 382, '#f6b6ff', .7);
 
   return {
     marcy: m,
     sign,
-    setSign(text) { st.textContent = text; },
+    setSign(text) { signLabel.textContent = text; },
   };
 }
 

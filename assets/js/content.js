@@ -1,269 +1,252 @@
 // NIWA ヒント小屋（スマホ版）の ことば と さくひん。
 // 文は {ja, en} の組。表示は app.js が ことばの設定で選ぶ。
+// PC版（塔の中の温室）の ことば（content.js / tower の会話）を そのまま使っている。
+// スマホにあわせて書きかえたのは「あそびかた」だけ（PC版は キーボードの説明のため）。
 // 作品を足すときは WORKS に 1 つ足して、ROOMS の works に id を入れるだけ。
 
 export const SITE = {
   name: 'NIWA',
-  by: { ja: 'by Marcy Miwa', en: 'by Marcy Miwa' },
-  // PC版（3D の温室）の URL。決まったらここに入れる（空なら案内だけ出す）。
+  // PC版（3D の温室）の URL。公開したら ここに入れる（空なら ボタンを出さない）。
   pcUrl: '',
-  instagram: 'https://www.instagram.com/marcy.miwa/',
+  textUrl: './list.html',
+  contact: {
+    email: 'contact@marcymiwa.com',
+    instagram: { handle: '@marcy.miwa', url: 'https://www.instagram.com/marcy.miwa/' },
+    pdf: null, // ポートフォリオの PDF（できたら URL を入れる）
+  },
 };
 
 // 画面のことば
 export const UI = {
+  by: { ja: 'by Marcy Miwa', en: 'by Marcy Miwa' },
   skipToList: { ja: 'もじだけの ページへ', en: 'Text-only page' },
   soundLabel: { ja: 'おと', en: 'Sound' },
-  soundOn: { ja: 'ON', en: 'ON' },
-  soundOff: { ja: 'OFF', en: 'OFF' },
-  langLabel: { ja: 'ことば（日本語 / English）', en: 'Language (日本語 / English)' },
+  soundOn: { ja: 'おとあり', en: 'On' },
+  soundOff: { ja: 'おとなし', en: 'Off' },
+  langLabel: { ja: '使用言語（日本語 / English）', en: 'Language (日本語 / English)' },
   back: { ja: 'もどる', en: 'Back' },
   close: { ja: 'とじる', en: 'Close' },
   speaker: { ja: 'まーしー', en: 'Marcy' },
-  stage: { ja: 'ヒント小屋', en: 'The Hint Hut' },
+  stage: { ja: 'ヒント小屋', en: 'The hint hut' },
   window: { ja: 'マーシーの窓', en: "Marcy's window" },
-  details: { ja: 'くわしく', en: 'Details' },
-  year: { ja: 'とし', en: 'Year' },
-  place: { ja: 'ばしょ', en: 'Place' },
-  format: { ja: 'かたち', en: 'Format' },
+  talkAgain: { ja: 'はなす', en: 'Talk' },
+  details: { ja: 'くわしく', en: 'More' },
+  year: { ja: '制作年', en: 'Year' },
+  place: { ja: '場所', en: 'Place' },
+  format: { ja: '形式', en: 'Format' },
   room: { ja: 'へや', en: 'Room' },
-  materials: { ja: 'そざい', en: 'Materials' },
-  allWorks: { ja: 'さくひん いちらん', en: 'All works' },
-  pcOnly: {
-    ja: 'この へやの なかは PC版の 温室で あるいて みられるよ。',
-    en: 'You can walk inside this room in the PC version of the greenhouse.',
-  },
-  tbd: { ja: 'じゅんびちゅう', en: 'Coming soon' },
+  spot: { ja: 'へやの どこ', en: 'Where' },
+  approach: { ja: '近づくと', en: 'Up close' },
+  point: { ja: 'この作品で伝えたい一点', en: 'The one thing' },
+  caption: { ja: 'キャプション', en: 'Caption' },
+  featured: { ja: '代表作', en: 'Featured' },
+  allWorks: { ja: 'さくひん いちらん', en: 'Works' },
+  garden: { ja: '庭', en: 'Garden' },
+  soon: { ja: 'じゅんびちゅう', en: 'Coming soon' },
   textOnly: { ja: 'もじだけの ページ', en: 'Text-only page' },
+  pcOnly: {
+    ja: 'この へやの なかは、パソコンの 3D の温室で あるいて みられるよ。',
+    en: 'On a computer, you can walk around inside this room in the 3D greenhouse.',
+  },
+  openPc: { ja: '3D の温室へ', en: 'Enter the 3D greenhouse' },
+  clips: { ja: '映像', en: 'Clips' },
+  items: { ja: 'おいている もの', en: 'In the shop' },
 };
 
-// へや（温室の壁ぎわの扉）
+// へや（温室の かべの 階段の とびら）。色は lab candy の着せかえの色。
 export const ROOMS = [
   {
-    id: 'kaichiku', no: 1, color: '#ff6a2b',
-    name: { ja: '解築停留所', en: 'Kaichiku Bus Stop' },
-    about: {
-      ja: 'とうじの 展示ばしょを そのまま 再現した へや。インスタレーションを みたり さわったり できるよ。',
-      en: 'A room that recreates the original exhibition space. You can see and touch the installations.',
+    id: 'kaichiku', no: 1, color: '#a8e032',
+    name: { ja: '解築停留所', en: 'Kaichiku Teiryujo' },
+    lede: {
+      ja: '当時の展示場所(旧高島第七小学校)を、スキャンで再現した部屋。教室・廊下・トイレ。',
+      en: 'The original venue, the former Takashima No.7 Elementary School, recreated from 3D scans: a classroom, a hallway and a toilet.',
     },
-    works: ['saigo-no-yosooi', 'matsugo-no-uruoi', 'kakawaru', 'tension'],
+    works: ['yosooi', 'kakawaru', 'uruoi', 'tension'],
   },
   {
-    id: 'cura', no: 2, color: '#f23a9a',
-    name: { ja: '個展 CURA', en: 'Solo Exhibition CURA' },
-    about: {
-      ja: 'わたしの 個展の へや。代表作が いるよ。ながおしで さわってみてね。',
-      en: 'The room of my solo show, home of my main piece. Press and hold to touch it.',
+    id: 'cura', no: 2, color: '#9d7eff',
+    name: { ja: '個展CURA', en: 'Solo Exhibition CURA' },
+    lede: {
+      ja: '当時の展示場所を再現した部屋。You touch me, and I mirror you.',
+      en: 'A room that recreates the original venue. You touch me, and I mirror you.',
     },
-    works: ['you-touch-me'],
+    works: ['touch'],
   },
   {
-    id: 'blankspace', no: 3, color: '#33d6b4',
+    id: 'blankspace', no: 3, color: '#eef3ff', soon: true,
     name: { ja: 'blankspace', en: 'blankspace' },
-    about: {
-      ja: 'プロトタイプの おきば。ためしに つくった ものたちが ならんでる。',
-      en: 'A place for prototypes — things I made to try ideas out.',
-    },
-    works: ['iine-game'],
+    lede: { ja: 'プロトタイプ置き場。いまは じゅんびちゅう。', en: 'A place for prototypes. Coming soon.' },
+    works: [],
   },
   {
-    id: 'vj', no: 4, color: '#6f86ff',
-    name: { ja: 'VJ 体験ブース', en: 'VJ Booth' },
-    about: {
-      ja: '渋谷の VJ で つかった ものたち。デッキで 映像を まぜて あそべるよ。ノリノリで どうぞ！',
-      en: 'Things I used for VJ sets in Shibuya. Mix visuals on the deck — get groovy!',
+    id: 'vj', no: 4, color: '#ff33a8',
+    name: { ja: 'VJ体験ブース', en: 'VJ Booth' },
+    lede: {
+      ja: '渋谷でVJしたときの映像たち。デッキにさわると、つぎの映像にきりかわる。',
+      en: 'Visuals from my VJ set in Shibuya. Touch the deck to switch to the next clip.',
     },
-    works: ['playful-classics'],
+    works: [],
+    // PC版の デッキで きりかわる 7 本（2026-08-15 OR SHIBUYA）
+    clips: [
+      { id: '01', name: 'thermal field', colors: ['#ff33a8', '#ffbe2e', '#2f4fb8'] },
+      { id: '02', name: 'editorial grid', colors: ['#fff6e9', '#2a2140', '#f23a9a'] },
+      { id: '03', name: 'thermal contour', colors: ['#ff6a2b', '#9d7eff', '#33d6b4'] },
+      { id: '04', name: 'riso halftone', colors: ['#2f4fb8', '#f23a9a', '#fff6e9'] },
+      { id: '05', name: 'heat matrix', colors: ['#ffbe2e', '#ff33a8', '#2a2140'] },
+      { id: '07', name: 'bayer dither', colors: ['#a8e032', '#2a2140', '#eef3ff'] },
+      { id: '08', name: 'crt bars', colors: ['#6f86ff', '#ff33a8', '#33d6b4'] },
+    ],
   },
   {
-    id: 'shop', no: 5, color: '#ffbe2e',
+    id: 'shop', no: 5, color: '#ffbe2e', soon: true,
     name: { ja: '販売ブース', en: 'Shop' },
-    about: {
-      ja: '電子工作・物理作品・NFT アートを おいている お店。',
-      en: 'A little shop of electronics, physical works and NFT art.',
+    lede: {
+      ja: '電子工作、物理作品、NFTアート。ご依頼・ご購入はお問い合わせください。',
+      en: 'Electronics, physical works and NFT art. For commissions and purchases, please get in touch.',
     },
-    works: ['chocolate', 'lighting'],
+    works: [],
+    items: [
+      { ja: '電子工作', en: 'Electronics' },
+      { ja: '物理作品', en: 'Physical works' },
+      { ja: 'NFTアート', en: 'NFT art' },
+    ],
   },
 ];
 
-// 庭にある もの（へやの外）
+// 庭（とびらの 外。らせん階段がある）
 export const GARDEN = {
-  id: 'garden', no: 0, color: '#a8e032',
-  name: { ja: '庭', en: 'The Garden' },
-  about: {
-    ja: '温室の まんなかの 庭。らせん階段が あって、のぼれるよ。',
-    en: 'The garden at the heart of the greenhouse, with a spiral staircase you can climb.',
+  id: 'garden', no: 0, color: '#33d6b4',
+  name: { ja: '庭', en: 'Garden' },
+  lede: {
+    ja: '温室の まんなかの 庭。らせん階段「つくることは、生きること。」は のぼれるよ。',
+    en: 'The garden in the middle of the greenhouse. You can climb the spiral staircase, “To make is to live.”',
   },
-  works: ['tsukuru-koto'],
+  works: ['tsukuru'],
 };
 
-// さくひん
+// さくひん（いちらんの じゅんばん: PC版と おなじ）
 export const WORKS = [
   {
-    id: 'you-touch-me', room: 'cura', featured: true, motif: 'mirror',
+    id: 'touch', room: 'cura', hero: true, motif: 'mirror',
     title: { ja: 'You touch me, and I mirror you.', en: 'You touch me, and I mirror you.' },
-    year: '2026', place: { ja: 'TOKYO', en: 'Tokyo' },
+    year: '2026',
+    place: { ja: '個展「CURA」／東京', en: 'Solo exhibition “CURA”, Tokyo' },
     format: { ja: 'インスタレーション', en: 'Installation' },
-    caption: {
-      ja: 'ふれると、光と音が ながれだす。ふれた手を、作品が うつしかえす。',
-      en: 'Touch it, and light and sound begin to flow. The work mirrors the hand that touches it.',
+    lede: {
+      ja: 'touch-reactiveな作品で、ミラーニューロンの外部化を試みました。',
+      en: 'A touch-reactive work that attempts to externalize mirror neurons.',
     },
-    point: { ja: '万物に おもいやりを もつこと。', en: 'Having compassion for all things.' },
-    links: [],
+    approach: { ja: '近づくと、光と音が流れ出す。', en: 'Come closer, and light and sound begin to flow.' },
+    point: { ja: '万物に思いやりをもつこと。', en: 'To hold compassion for all things.' },
+    // 展示のキャプション（会場で 使ったもの）
+    caption: {
+      ja: 'どうぞ、そっとお花に\nあるいはだれかに触れてみてください。\n触れると空間に光が広がります。\nそれはお花が喜んでいるように 見えるかもしれませんが、\nあなた自身の心の中に生まれた 「よろこび」の形でもあります。\n私たちには、他者の感情を鏡のように映し出す\n不思議な働きがあります。\nあなたが触れて生まれた優しい光は\nそれを見た誰かの心にも反射し\nあたたかな癒しを届けます。\n誰かを大切に思うことはあなたをCURAすること\nあなたを大切に思うことは誰かをCURAすること\n私とあなた、ヒトとモノ。\n触れ合うことで境界線は静かに溶け合い、\nあなたの幸せが、いつの間にか誰かを癒していく。\nここから始まる、絶え間ない 「癒し」の循環に\nどうかゆっくりと身をゆだねてみてください。',
+      en: 'Please, gently touch the flowers,\nor perhaps someone beside you.\nAs you touch, light spreads across the space.\nIt may seem as though the flowers are rejoicing, but it is also the shape of the “joy”\nborn within your own heart.\nWe possess a wondrous ability\nto reflect the emotions of others like a mirror.\nThe gentle light born from your touch will reflect in the hearts of those who see it, delivering a warm sense of healing.\nTo cherish someone is to CURA yourself.\nTo cherish yourself is to CURA someone else.\nYou and I, people and things.\nThrough touch, our boundaries quietly melt away, and your happiness, before you know it, heals another.\nPlease, slowly surrender yourself to this endless cycle of healing that begins right here.',
+    },
   },
   {
-    id: 'tsukuru-koto', room: 'garden', featured: true, motif: 'spiral',
-    title: { ja: 'つくることは、生きること。', en: 'To Make Is to Live.' },
-    year: '2026', place: { ja: 'TOKYO', en: 'Tokyo' },
+    id: 'tsukuru', room: 'garden', hero: true, motif: 'spiral',
+    title: { ja: 'つくることは、生きること。', en: 'つくることは、生きること。' },
+    subtitle: { ja: '', en: 'To make is to live.' },
+    year: '2026',
+    place: { ja: '東京', en: 'Tokyo' },
     format: { ja: 'エッセイ', en: 'Essay' },
-    caption: {
-      ja: 'エッセイを 3D の らせん階段に くみなおした。一段ずつ のぼりながら よむ。',
-      en: 'An essay rebuilt as a 3D spiral staircase, read one step at a time as you climb.',
-    },
-    point: { ja: '関わりを もつことへの いとおしさ。', en: 'The tenderness of being connected.' },
-    links: [],
+    approach: { ja: '近づくと、徐々に階段をのぼっていく。', en: 'Come closer, and you gradually climb the stairs.' },
+    point: { ja: '関わりをもつことへの愛おしさ。', en: 'The tenderness of being involved with one another.' },
   },
   {
-    id: 'saigo-no-yosooi', room: 'kaichiku', motif: 'lip',
-    title: { ja: '最期のよそおい', en: 'Final Adornment' },
-    year: '2026', place: { ja: '解築停留所', en: 'Kaichiku' },
+    id: 'yosooi', room: 'kaichiku', motif: 'lip',
+    title: { ja: '最期のよそおい', en: '最期のよそおい' },
+    year: '2026',
+    place: { ja: '解築停留所(旧高島第七小学校)／東京', en: 'Kaichiku Teiryujo (former Takashima No.7 Elementary School), Tokyo' },
+    spot: { ja: '教室', en: 'Classroom' },
     format: { ja: 'インスタレーション', en: 'Installation' },
-    caption: {
-      ja: '3D データに リップを ぬって あそべる インスタレーション。',
-      en: 'An installation where you can play by putting lipstick on 3D data.',
-    },
-    links: [],
-  },
-  {
-    id: 'matsugo-no-uruoi', room: 'kaichiku', motif: 'drop',
-    title: { ja: '末期のうるおい', en: 'Last Moisture' },
-    year: '2026', place: { ja: '解築停留所', en: 'Kaichiku' },
-    format: { ja: 'インスタレーション', en: 'Installation' },
-    caption: { ja: '', en: '' },
-    links: [],
+    lede: { ja: '廃校に死に化粧を施しました。', en: 'I applied death makeup to a closed-down school.' },
   },
   {
     id: 'kakawaru', room: 'kaichiku', motif: 'knot',
-    title: { ja: 'かかわる', en: 'Kakawaru (To Relate)' },
-    year: '2026', place: { ja: '解築停留所', en: 'Kaichiku' },
+    title: { ja: 'かかわる', en: 'かかわる' },
+    year: '2026',
+    place: { ja: '解築停留所(旧高島第七小学校)／東京', en: 'Kaichiku Teiryujo (former Takashima No.7 Elementary School), Tokyo' },
+    spot: { ja: '奥のトイレ', en: 'The toilet at the back' },
     format: { ja: 'インスタレーション', en: 'Installation' },
-    caption: { ja: '', en: '' },
-    links: [],
+  },
+  {
+    id: 'uruoi', room: 'kaichiku', motif: 'drop',
+    title: { ja: '末期のうるおい', en: '末期のうるおい' },
+    year: '2026',
+    place: { ja: '解築停留所(旧高島第七小学校)／東京', en: 'Kaichiku Teiryujo (former Takashima No.7 Elementary School), Tokyo' },
+    spot: { ja: '教室の中', en: 'Inside the classroom' },
+    format: { ja: 'インスタレーション', en: 'Installation' },
+    lede: {
+      ja: '廃校アートの第2弾で、末期の水を模したtouch-reactiveな作品です。',
+      en: 'The second closed-school piece: a touch-reactive work modeled on matsugo-no-mizu, the last water offered to the dying.',
+    },
   },
   {
     id: 'tension', room: 'kaichiku', motif: 'spark',
-    title: { ja: '私のテンションが高いわけ', en: 'Why My Energy Is So High' },
-    year: '2026', place: { ja: '解築停留所', en: 'Kaichiku' },
+    title: { ja: '私のテンションが高いわけ', en: '私のテンションが高いわけ' },
+    year: '2026',
+    place: { ja: '解築停留所(旧高島第七小学校)／東京', en: 'Kaichiku Teiryujo (former Takashima No.7 Elementary School), Tokyo' },
+    spot: { ja: '廊下', en: 'Hallway' },
     format: { ja: 'エッセイのインスタレーション', en: 'Essay installation' },
-    caption: {
-      ja: 'エッセイを インスタレーションに した。とうじの ようすを 再現する。',
-      en: 'An essay turned into an installation, recreating the day it was shown.',
-    },
-    links: [],
-  },
-  {
-    id: 'iine-game', room: 'blankspace', motif: 'node',
-    title: { ja: 'いいのゲーム（仮）', en: 'The “Good” Game (working title)' },
-    year: '2026', place: { ja: '', en: '' },
-    format: { ja: 'TouchDesigner（.tox）', en: 'TouchDesigner (.tox)' },
-    caption: { ja: '', en: '' },
-    links: [],
-  },
-  {
-    id: 'playful-classics', room: 'vj', motif: 'wave',
-    title: { ja: 'Playful Classics', en: 'Playful Classics' },
-    year: '2026', place: { ja: 'TOKYO', en: 'Tokyo' },
-    format: { ja: '映像作品', en: 'Video' },
-    caption: {
-      ja: 'クラシックの 演奏の 音と うごく 映像。',
-      en: 'Visuals that move with live classical music.',
-    },
-    links: [],
-  },
-  {
-    id: 'chocolate', room: 'shop', motif: 'choco',
-    title: { ja: 'チョコレートのやつ（仮）', en: 'The Chocolate One (working title)' },
-    year: '2026', place: { ja: '', en: '' },
-    format: { ja: 'Web サイト', en: 'Website' },
-    caption: { ja: '', en: '' },
-    links: [],
-  },
-  {
-    id: 'lighting', room: 'shop', motif: 'lamp',
-    title: { ja: '照明作品（仮）', en: 'Lighting Work (working title)' },
-    year: '2026', place: { ja: '', en: '' },
-    format: { ja: '立体', en: 'Object' },
-    caption: { ja: '', en: '' },
-    links: [],
   },
 ];
 
-// まーしーの ことば
+// まーしーの ことば（PC版の マーシーの窓と おなじ）
 export const TALK = {
-  greeting: [
-    { ja: 'やっほー！ まーしーだよ。', en: "Hi there! I'm Marcy." },
-    { ja: 'ここは ヒント小屋。\nNIWA（塔の中の温室）の まんなかに あるよ。', en: "This is the Hint Hut,\nright in the middle of NIWA — a greenhouse inside a tower." },
-    { ja: 'なにか ききたいこと ある？', en: 'Anything you want to ask?' },
+  hello: { ja: 'やっほー！', en: 'Hey there!' },
+  intro: { ja: 'まーしーだよ。ここは わたしの 庭。', en: "I'm Marcy. This is my garden." },
+  murmurs: [
+    { ja: '温室なのは、あたたかいほうが好きだから。', en: "It's a greenhouse because I like it warm." },
+    { ja: 'ここは庭であり、土間でもある場所。', en: 'This is a garden, and also a doma — an earthen floor under a roof.' },
+    { ja: 'つくることは、生きること。', en: 'To make is to live.' },
+    { ja: '万物に思いやりをもつこと。', en: 'Hold compassion for all things.' },
+    { ja: '関係性を結ぶことで、作品たちは生まれる。', en: 'Works are born from tying relationships together.' },
+    { ja: 'node は結び目。TouchDesigner も Blender も、関係性でできてる。', en: 'A node is a knot. TouchDesigner and Blender are made of relationships, too.' },
+    { ja: 'この庭では、あなたのふるまいが世界に映るよ。', en: 'In this garden, the way you move is reflected in the world.' },
   ],
-  again: [
-    { ja: 'ほかに ききたいこと ある？', en: 'Anything else?' },
+  menuAgain: { ja: 'ほかに ききたいことは ある？', en: 'Anything else you would like to know?' },
+
+  // メインの コマンド（PC版と おなじ じゅんばん）
+  menu: [
+    { id: 'howto', label: { ja: 'あそびかた', en: 'How to play' } },
+    { id: 'rooms', label: { ja: 'へやのこと', en: 'The rooms' } },
+    { id: 'works', label: { ja: 'さくひん', en: 'Works' } },
+    { id: 'about', label: { ja: 'まーしーのこと', en: 'About Marcy' } },
+    { id: 'bye', label: { ja: 'またね', en: 'See you' } },
   ],
-  mutterings: [
-    { ja: '関係性を むすぶことで、作品が うまれるんだ。', en: 'Works are born from tying relationships together.' },
-    { ja: '温室なのは、あたたかい ほうが すきだから。', en: "It's a greenhouse because I like it warm." },
-    { ja: 'ノードって、結び目の ことなんだよ。', en: 'A “node” is a knot, you know.' },
-    { ja: 'まよったら、いつでも この 小屋に もどってきてね。', en: 'If you get lost, come back to this hut anytime.' },
+
+  // スマホ版の あそびかた（PC版は W A S D の説明なので、さわりかたに書きかえた）
+  howto: [
+    { ja: 'ここは ヒント小屋。この まどで わたしと はなせるよ。', en: 'This is the hint hut. You can talk with me in this window.' },
+    { ja: 'もじを タップすると つぎへ。えらびたい ものを タップしてね。', en: 'Tap the text to go on, and tap whatever you want to choose.' },
+    { ja: 'かべの とびらを タップすると、その へやの はなしが きけるよ。わたしを タップすると ひとりごと。', en: 'Tap a door on the wall to hear about that room. Tap me and I will mumble something.' },
+    { ja: 'パソコンで ひらくと、温室の なかを あるいて へやに はいれるよ。', en: 'On a computer, you can walk around the greenhouse and go into the rooms.' },
   ],
-  commands: [
-    {
-      id: 'howto', icon: '?',
-      label: { ja: 'あそびかた', en: 'How to play' },
-      lines: [
-        { ja: 'ここは スマホ版の ヒント小屋。\nこの 窓で わたしと はなせるよ。', en: "This is the phone version of the Hint Hut.\nYou can talk with me in this window." },
-        { ja: 'ことばを タップすると つぎへ すすむよ。\nえらびたい ものを タップしてね。', en: 'Tap the text to continue.\nTap whatever you want to choose.' },
-        { ja: 'わたしを タップすると、ひとりごとを いうよ。', en: "Tap me and I'll mumble something." },
-        { ja: 'PC で ひらくと、温室の なかを あるいて へやを まわれるよ。', en: 'Open this on a computer to walk around the greenhouse and visit the rooms.' },
-      ],
-    },
-    { id: 'rooms', icon: '◇', label: { ja: 'へやのこと', en: 'The rooms' } },
-    { id: 'take', icon: '→', label: { ja: 'つれていって', en: 'Take me there' } },
-    { id: 'works', icon: '★', label: { ja: 'さくひん いちらん', en: 'All works' } },
-    {
-      id: 'me', icon: '♡',
-      label: { ja: 'まーしーのこと', en: 'About Marcy' },
-      lines: [
-        { ja: 'わたしは まーしー（三輪 万裕子）。\nクリエイティブテクノロジスト だよ。', en: "I'm Marcy (Mayuko Miwa),\na creative technologist." },
-        { ja: '見る人の ふるまいで かわる、インタラクティブな 作品を つくってる。', en: 'I make interactive works that change with how people behave around them.' },
-        { ja: 'TouchDesigner や Blender で、映像と 音と 光を むすんでるよ。', en: 'I tie together visuals, sound and light with TouchDesigner and Blender.' },
-      ],
-    },
-    {
-      id: 'contact', icon: '✉',
-      label: { ja: 'れんらく', en: 'Contact' },
-      lines: [
-        { ja: 'いっしょに なにか つくりたい？ うれしい！', en: 'Want to make something together? Yay!' },
-        { ja: 'Instagram の DM に きがるに れんらくしてね。', en: 'Feel free to send me a DM on Instagram.' },
-      ],
-      links: [{ label: { ja: 'Instagram @marcy.miwa', en: 'Instagram @marcy.miwa' }, url: 'https://www.instagram.com/marcy.miwa/' }],
-    },
-    {
-      id: 'bye', icon: '✿',
-      label: { ja: 'またね', en: 'See you' },
-      lines: [
-        { ja: 'きてくれて ありがとう！', en: 'Thanks for coming!' },
-        { ja: 'また いつでも あそびにきてね。\nまたね〜！', en: 'Come back and play anytime.\nSee you!' },
-      ],
-    },
+
+  roomsAsk: { ja: 'どの へやの はなしを きく？', en: 'Which room would you like to hear about?' },
+  take: { ja: 'つれていって', en: 'Take me there' },
+  going: { ja: 'いってらっしゃい！', en: 'Off you go!' },
+
+  // とびらを タップしたとき
+  door: { is: { ja: 'の とびらだ。', en: ' — a door.' }, ask: { ja: 'はいる？', en: 'Go in?' } },
+  enter: { ja: 'はいる', en: 'Go in' },
+  cancel: { ja: 'やめる', en: 'Not now' },
+
+  about: [
+    { ja: 'We are born curators of our souls.', en: 'We are born curators of our souls.' },
+    { ja: 'アーティスト、キュレーター。クリエイティブコーディングをしています。', en: 'I am an artist and curator. I am into creative coding.' },
+    { ja: 'TouchDesigner / Blender / Resolume Avenue / DMX', en: 'TouchDesigner / Blender / Resolume Avenue / DMX' },
   ],
-  roomsIntro: [
-    { ja: '温室の かべぎわに、とびらが 5 まい あるよ。\nどの へやの はなしを きく？', en: 'There are five doors along the greenhouse walls.\nWhich room do you want to hear about?' },
-  ],
-  takeIntro: [
-    { ja: 'どこに いく？', en: 'Where do you want to go?' },
-  ],
-  worksIntro: [
-    { ja: 'これまでの さくひんだよ。きになる ものを タップしてね。', en: 'Here are my works so far. Tap one that catches your eye.' },
-  ],
-  enterRoom: { ja: '{room} に つれていくね！', en: "Let's go to {room}!" },
-  roomEmpty: { ja: 'この へやは いま じゅんびちゅう。もう ちょっと まってね。', en: "This room is still being set up. Hang on a little longer!" },
+  contact: { ja: 'れんらくは こちら\ncontact@marcymiwa.com\nInstagram @marcy.miwa', en: 'Get in touch\ncontact@marcymiwa.com\nInstagram @marcy.miwa' },
+  contactLabel: { ja: 'れんらく', en: 'Contact' },
+  mail: { ja: 'メール', en: 'Email' },
+
+  byeShort: { ja: 'またね！', en: 'See you!' },
+  farewell: { ja: 'きてくれて ありがとう！ さくひんの いちらんは ここから みられるよ。', en: 'Thanks for coming! You can find the list of works here.' },
+  farewellPdf: { ja: 'きてくれて ありがとう！ さくひんの いちらんと PDF は ここから みられるよ。', en: 'Thanks for coming! You can find the list of works and the PDF here.' },
+
+  worksAsk: { ja: 'どの さくひんを みる？', en: 'Which work would you like to see?' },
 };

@@ -40,6 +40,7 @@
         <canvas class="glitter" id="glitter"></canvas>
       </div>
       <svg class="dome" viewBox="0 0 400 400" preserveAspectRatio="xMidYMax slice" aria-hidden="true" id="dome"></svg>
+      <div class="doors" id="doors"></div>
       <div class="scene" id="scene">
         <!-- 小屋とまーしーは scene.js が描く -->
       </div>
@@ -48,9 +49,10 @@
 
     <!-- 下: マーシーの窓 -->
     <section class="window-wrap" aria-label="マーシーの窓" id="windowWrap">
+      <button class="talk-btn" id="talkBtn" type="button" hidden><span aria-hidden="true">💬</span> <span data-i18n="talkAgain">はなす</span></button>
       <div class="window" id="window">
+        <span class="speaker" id="speaker">まーしー</span>
         <div class="window-head">
-          <span class="speaker" id="speaker">まーしー</span>
           <button class="back" id="backBtn" type="button" hidden><span aria-hidden="true">◀</span> <span data-i18n="back">もどる</span></button>
         </div>
         <div class="window-body" id="windowBody" aria-live="polite">

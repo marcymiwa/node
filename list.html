@@ -3,87 +3,145 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NIWA by Marcy Miwa — もじだけの ページ / Text only</title>
-<meta name="description" content="NIWA（塔の中の温室）の さくひんを もじだけで まとめた ページ。">
+<title>NIWA by Marcy Miwa — もじだけのページ / Text-only page</title>
+<meta name="description" content="こんにちは！まーしーです！ 作品の一覧(文字だけの版)。">
+<meta property="og:title" content="NIWA by Marcy Miwa">
+<meta property="og:description" content="こんにちは！まーしーです！">
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
 <style>
-:root { --ink:#2a2140; --paper:#fff6e9; --pink:#f23a9a; }
+:root { --ink:#2a2140; --paper:#fff6e9; --pink:#f23a9a; --blue:#2f4fb8; --lilac:#9d7eff; --lime:#a8e032; --sun:#ffbe2e; }
 * { box-sizing: border-box; }
 body { margin:0; background:var(--paper); color:var(--ink); font: 17px/1.85 "Hiragino Maru Gothic ProN","Hiragino Sans","Yu Gothic","Noto Sans JP",system-ui,sans-serif; }
 main { max-width: 680px; margin: 0 auto; padding: 24px 16px 64px; }
-h1 { font-size: 28px; line-height:1.3; margin: 0 0 4px; }
-h2 { font-size: 22px; margin: 40px 0 8px; border-bottom: 3px solid var(--ink); }
-h3 { font-size: 19px; margin: 24px 0 4px; }
-a { color: var(--ink); text-decoration-color: var(--pink); text-underline-offset: 3px; }
-a:focus-visible { outline: 3px solid var(--pink); outline-offset: 2px; }
+.kind { display:inline-block; margin:0 0 10px; padding:2px 12px; border:2px solid var(--ink); border-radius:999px; font-size:16px; }
+h1 { font-size: 40px; line-height:1.15; margin: 0 0 4px; color: var(--pink); text-shadow: 3px 3px 0 var(--blue); letter-spacing:.12em; }
+h1 small { display:block; font-size:17px; color: var(--ink); text-shadow:none; letter-spacing:.02em; }
+h2 { font-size: 21px; margin: 44px 0 10px; padding: 6px 16px 5px; width: fit-content; border: 2px solid var(--ink); border-radius: 999px; background: linear-gradient(180deg,#e2d7ff,#b9a2ff); }
+h2.garden { background: linear-gradient(180deg,#e4f7b4,var(--lime)); }
+h2.contact { background: linear-gradient(180deg,#ffe6a8,var(--sun)); }
+h3 { font-size: 19px; margin: 26px 0 4px; padding-left: 12px; border-left: 8px solid var(--c, var(--lilac)); }
+a { color: var(--ink); text-decoration: underline dashed var(--pink); text-underline-offset: 4px; }
+a:focus-visible, summary:focus-visible { outline: 3px dashed var(--pink); outline-offset: 3px; }
 ul { padding-left: 1.2em; }
-li { margin: 0 0 10px; }
+li { margin: 0 0 14px; }
+.wt { font-size: 18px; }
 .m { opacity:.75; }
-nav { display:flex; flex-wrap:wrap; gap:12px; margin: 12px 0 0; }
-nav a { display:inline-flex; align-items:center; min-height:44px; padding:0 14px; border:2px solid var(--ink); border-radius:999px; text-decoration:none; }
-hr { border:0; border-top: 2px dashed rgba(42,33,64,.3); margin: 48px 0; }
+.badge, .pill { display:inline-block; padding: 0 10px; border:2px solid var(--ink); border-radius:999px; font-size:16px; line-height:1.6; background:#ffe6a8; }
+.pill { background:#fff8f2; }
+.motto { font-family: "Hiragino Mincho ProN","Yu Mincho",serif; font-size: 19px; }
+.deep { font-family: "Hiragino Mincho ProN","Yu Mincho",serif; line-height: 2.05; }
+details summary { cursor: pointer; min-height: 44px; display:flex; align-items:center; }
+nav { display:flex; flex-wrap:wrap; gap:10px; margin: 12px 0 0; }
+nav a { display:inline-flex; align-items:center; min-height:44px; padding:0 14px; border:2px solid var(--ink); border-radius:999px; text-decoration:none; background:#fff8f2; }
+.toc { margin-top: 28px; }
+hr { border:0; border-top: 2px dashed rgba(42,33,64,.3); margin: 56px 0; }
+footer { margin-top: 48px; font-size:16px; opacity:.8; }
 </style>
 </head>
 <body>
-<main>
+<main id="top">
+<p class="kind">もじだけの ページ / Text-only page</p>
 <h1>NIWA <small>by Marcy Miwa</small></h1>
-<p>もじだけの ページ / Text-only page</p>
-<nav aria-label="ページ内リンク"><a href="index.html">ヒント小屋にもどる</a><a href="#ja">日本語</a><a href="#en">English</a></nav>
+<p>こんにちは！まーしーです！</p>
+<nav aria-label="Language / ヒント小屋"><a href="index.html">ヒント小屋へ / To the hint hut</a><a href="#ja" lang="ja">日本語</a><a href="#en" lang="en">English</a></nav>
 <article lang="ja" id="ja">
-<h2>まーしーのこと</h2>
-<p>わたしは まーしー（三輪 万裕子）。<br>クリエイティブテクノロジスト だよ。</p>
-<p>見る人の ふるまいで かわる、インタラクティブな 作品を つくってる。</p>
-<p>TouchDesigner や Blender で、映像と 音と 光を むすんでるよ。</p>
-<h2>へや と さくひん</h2>
-<section class="room"><h3>庭</h3><p>温室の まんなかの 庭。らせん階段が あって、のぼれるよ。</p>
-<ul><li><strong>つくることは、生きること。</strong> <span class="m">— 2026 / TOKYO / エッセイ</span><br>エッセイを 3D の らせん階段に くみなおした。一段ずつ のぼりながら よむ。</li></ul></section>
-<section class="room"><h3>1. 解築停留所</h3><p>とうじの 展示ばしょを そのまま 再現した へや。インスタレーションを みたり さわったり できるよ。</p>
-<ul><li><strong>最期のよそおい</strong> <span class="m">— 2026 / 解築停留所 / インスタレーション</span><br>3D データに リップを ぬって あそべる インスタレーション。</li>
-<li><strong>末期のうるおい</strong> <span class="m">— 2026 / 解築停留所 / インスタレーション</span></li>
-<li><strong>かかわる</strong> <span class="m">— 2026 / 解築停留所 / インスタレーション</span></li>
-<li><strong>私のテンションが高いわけ</strong> <span class="m">— 2026 / 解築停留所 / エッセイのインスタレーション</span><br>エッセイを インスタレーションに した。とうじの ようすを 再現する。</li></ul></section>
-<section class="room"><h3>2. 個展 CURA</h3><p>わたしの 個展の へや。代表作が いるよ。ながおしで さわってみてね。</p>
-<ul><li><strong>You touch me, and I mirror you.</strong> <span class="m">— 2026 / TOKYO / インスタレーション</span><br>ふれると、光と音が ながれだす。ふれた手を、作品が うつしかえす。</li></ul></section>
-<section class="room"><h3>3. blankspace</h3><p>プロトタイプの おきば。ためしに つくった ものたちが ならんでる。</p>
-<ul><li><strong>いいのゲーム（仮）</strong> <span class="m">— 2026 / TouchDesigner（.tox）</span></li></ul></section>
-<section class="room"><h3>4. VJ 体験ブース</h3><p>渋谷の VJ で つかった ものたち。デッキで 映像を まぜて あそべるよ。ノリノリで どうぞ！</p>
-<ul><li><strong>Playful Classics</strong> <span class="m">— 2026 / TOKYO / 映像作品</span><br>クラシックの 演奏の 音と うごく 映像。</li></ul></section>
-<section class="room"><h3>5. 販売ブース</h3><p>電子工作・物理作品・NFT アートを おいている お店。</p>
-<ul><li><strong>チョコレートのやつ（仮）</strong> <span class="m">— 2026 / Web サイト</span></li>
-<li><strong>照明作品（仮）</strong> <span class="m">— 2026 / 立体</span></li></ul></section>
-<h2>れんらく</h2>
-<p>いっしょに なにか つくりたい？ うれしい！</p>
-<p>Instagram の DM に きがるに れんらくしてね。</p>
-<p><a href="https://www.instagram.com/marcy.miwa/">Instagram @marcy.miwa</a></p>
+<nav class="toc" aria-label="もくじ"><a href="#ja-featured">代表作</a><a href="#ja-rooms">へや</a><a href="#ja-garden">庭</a><a href="#ja-about">まーしーのこと</a><a href="#ja-contact">れんらく</a></nav>
+<h2 id="ja-featured">代表作</h2>
+<ul><li><strong class="wt">You touch me, and I mirror you.</strong><br><span class="m">2026 · インスタレーション · ② 個展CURA</span><br>touch-reactiveな作品で、ミラーニューロンの外部化を試みました。<br>→ 万物に思いやりをもつこと。<details><summary>キャプション</summary><p class="deep">どうぞ、そっとお花に<br>あるいはだれかに触れてみてください。<br>触れると空間に光が広がります。<br>それはお花が喜んでいるように 見えるかもしれませんが、<br>あなた自身の心の中に生まれた 「よろこび」の形でもあります。<br>私たちには、他者の感情を鏡のように映し出す<br>不思議な働きがあります。<br>あなたが触れて生まれた優しい光は<br>それを見た誰かの心にも反射し<br>あたたかな癒しを届けます。<br>誰かを大切に思うことはあなたをCURAすること<br>あなたを大切に思うことは誰かをCURAすること<br>私とあなた、ヒトとモノ。<br>触れ合うことで境界線は静かに溶け合い、<br>あなたの幸せが、いつの間にか誰かを癒していく。<br>ここから始まる、絶え間ない 「癒し」の循環に<br>どうかゆっくりと身をゆだねてみてください。</p></details></li>
+<li><strong class="wt">つくることは、生きること。</strong><br><span class="m">2026 · エッセイ · 庭</span><br>→ 関わりをもつことへの愛おしさ。</li></ul>
+<h2 id="ja-rooms">へや</h2>
+<section class="room" style="--c:#a8e032"><h3>① 解築停留所</h3>
+<p>当時の展示場所(旧高島第七小学校)を、スキャンで再現した部屋。教室・廊下・トイレ。</p>
+<ul><li><strong class="wt">最期のよそおい</strong><br><span class="m">2026 · インスタレーション · ① 解築停留所</span><br>廃校に死に化粧を施しました。</li>
+<li><strong class="wt">かかわる</strong><br><span class="m">2026 · インスタレーション · ① 解築停留所</span></li>
+<li><strong class="wt">末期のうるおい</strong><br><span class="m">2026 · インスタレーション · ① 解築停留所</span><br>廃校アートの第2弾で、末期の水を模したtouch-reactiveな作品です。</li>
+<li><strong class="wt">私のテンションが高いわけ</strong><br><span class="m">2026 · エッセイのインスタレーション · ① 解築停留所</span></li></ul>
+
+</section>
+<section class="room" style="--c:#9d7eff"><h3>② 個展CURA</h3>
+<p>当時の展示場所を再現した部屋。You touch me, and I mirror you.</p>
+<ul><li><strong class="wt">You touch me, and I mirror you.</strong><br><span class="m">2026 · インスタレーション · ② 個展CURA</span><br>touch-reactiveな作品で、ミラーニューロンの外部化を試みました。<br>→ 万物に思いやりをもつこと。<details><summary>キャプション</summary><p class="deep">どうぞ、そっとお花に<br>あるいはだれかに触れてみてください。<br>触れると空間に光が広がります。<br>それはお花が喜んでいるように 見えるかもしれませんが、<br>あなた自身の心の中に生まれた 「よろこび」の形でもあります。<br>私たちには、他者の感情を鏡のように映し出す<br>不思議な働きがあります。<br>あなたが触れて生まれた優しい光は<br>それを見た誰かの心にも反射し<br>あたたかな癒しを届けます。<br>誰かを大切に思うことはあなたをCURAすること<br>あなたを大切に思うことは誰かをCURAすること<br>私とあなた、ヒトとモノ。<br>触れ合うことで境界線は静かに溶け合い、<br>あなたの幸せが、いつの間にか誰かを癒していく。<br>ここから始まる、絶え間ない 「癒し」の循環に<br>どうかゆっくりと身をゆだねてみてください。</p></details></li></ul>
+
+</section>
+<section class="room" style="--c:#eef3ff"><h3>③ blankspace <span class="badge">じゅんびちゅう</span></h3>
+<p>プロトタイプ置き場。いまは じゅんびちゅう。</p>
+
+
+</section>
+<section class="room" style="--c:#ff33a8"><h3>④ VJ体験ブース</h3>
+<p>渋谷でVJしたときの映像たち。デッキにさわると、つぎの映像にきりかわる。</p>
+
+
+<p class="m">映像: thermal field / editorial grid / thermal contour / riso halftone / heat matrix / bayer dither / crt bars</p></section>
+<section class="room" style="--c:#ffbe2e"><h3>⑤ 販売ブース <span class="badge">じゅんびちゅう</span></h3>
+<p>電子工作、物理作品、NFTアート。ご依頼・ご購入はお問い合わせください。</p>
+
+<p><span class="pill">電子工作</span> <span class="pill">物理作品</span> <span class="pill">NFTアート</span></p><p><a href="#ja-contact">→ れんらく</a></p>
+</section>
+<h2 id="ja-garden" class="garden">庭</h2>
+<p>温室の まんなかの 庭。らせん階段「つくることは、生きること。」は のぼれるよ。</p>
+<ul><li><strong class="wt">つくることは、生きること。</strong><br><span class="m">2026 · エッセイ · 庭</span><br>→ 関わりをもつことへの愛おしさ。</li></ul>
+<h2 id="ja-about">まーしーのこと</h2>
+<p><strong>まーしー</strong> — Marcy Miwa</p>
+<p class="motto">We are born curators of our souls.</p>
+<p>アーティスト、キュレーター。クリエイティブコーディングをしています。</p>
+<p><span class="m">スキル:</span> TouchDesigner / Blender / Resolume Avenue / DMX</p>
+<h2 id="ja-contact" class="contact">れんらく</h2>
+<p><a href="mailto:contact@marcymiwa.com">contact@marcymiwa.com</a></p>
+<p><a href="https://www.instagram.com/marcy.miwa/" rel="noopener">Instagram @marcy.miwa</a></p>
+
+<p><a href="#top">↑ うえへ</a></p>
 </article>
 <hr>
 <article lang="en" id="en">
-<h2>About Marcy</h2>
-<p>I&#39;m Marcy (Mayuko Miwa),<br>a creative technologist.</p>
-<p>I make interactive works that change with how people behave around them.</p>
-<p>I tie together visuals, sound and light with TouchDesigner and Blender.</p>
-<h2>Rooms and works</h2>
-<section class="room"><h3>The Garden</h3><p>The garden at the heart of the greenhouse, with a spiral staircase you can climb.</p>
-<ul><li><strong>To Make Is to Live.</strong> <span class="m">— 2026 / Tokyo / Essay</span><br>An essay rebuilt as a 3D spiral staircase, read one step at a time as you climb.</li></ul></section>
-<section class="room"><h3>1. Kaichiku Bus Stop</h3><p>A room that recreates the original exhibition space. You can see and touch the installations.</p>
-<ul><li><strong>Final Adornment</strong> <span class="m">— 2026 / Kaichiku / Installation</span><br>An installation where you can play by putting lipstick on 3D data.</li>
-<li><strong>Last Moisture</strong> <span class="m">— 2026 / Kaichiku / Installation</span></li>
-<li><strong>Kakawaru (To Relate)</strong> <span class="m">— 2026 / Kaichiku / Installation</span></li>
-<li><strong>Why My Energy Is So High</strong> <span class="m">— 2026 / Kaichiku / Essay installation</span><br>An essay turned into an installation, recreating the day it was shown.</li></ul></section>
-<section class="room"><h3>2. Solo Exhibition CURA</h3><p>The room of my solo show, home of my main piece. Press and hold to touch it.</p>
-<ul><li><strong>You touch me, and I mirror you.</strong> <span class="m">— 2026 / Tokyo / Installation</span><br>Touch it, and light and sound begin to flow. The work mirrors the hand that touches it.</li></ul></section>
-<section class="room"><h3>3. blankspace</h3><p>A place for prototypes — things I made to try ideas out.</p>
-<ul><li><strong>The “Good” Game (working title)</strong> <span class="m">— 2026 / TouchDesigner (.tox)</span></li></ul></section>
-<section class="room"><h3>4. VJ Booth</h3><p>Things I used for VJ sets in Shibuya. Mix visuals on the deck — get groovy!</p>
-<ul><li><strong>Playful Classics</strong> <span class="m">— 2026 / Tokyo / Video</span><br>Visuals that move with live classical music.</li></ul></section>
-<section class="room"><h3>5. Shop</h3><p>A little shop of electronics, physical works and NFT art.</p>
-<ul><li><strong>The Chocolate One (working title)</strong> <span class="m">— 2026 / Website</span></li>
-<li><strong>Lighting Work (working title)</strong> <span class="m">— 2026 / Object</span></li></ul></section>
-<h2>Contact</h2>
-<p>Want to make something together? Yay!</p>
-<p>Feel free to send me a DM on Instagram.</p>
-<p><a href="https://www.instagram.com/marcy.miwa/">Instagram @marcy.miwa</a></p>
+<nav class="toc" aria-label="Contents"><a href="#en-featured">Featured works</a><a href="#en-rooms">Rooms</a><a href="#en-garden">Garden</a><a href="#en-about">About Marcy</a><a href="#en-contact">Contact</a></nav>
+<h2 id="en-featured">Featured works</h2>
+<ul><li><strong class="wt">You touch me, and I mirror you.</strong><br><span class="m">2026 · Installation · ② Solo Exhibition CURA</span><br>A touch-reactive work that attempts to externalize mirror neurons.<br>→ To hold compassion for all things.<details><summary>Caption</summary><p class="deep">Please, gently touch the flowers,<br>or perhaps someone beside you.<br>As you touch, light spreads across the space.<br>It may seem as though the flowers are rejoicing, but it is also the shape of the “joy”<br>born within your own heart.<br>We possess a wondrous ability<br>to reflect the emotions of others like a mirror.<br>The gentle light born from your touch will reflect in the hearts of those who see it, delivering a warm sense of healing.<br>To cherish someone is to CURA yourself.<br>To cherish yourself is to CURA someone else.<br>You and I, people and things.<br>Through touch, our boundaries quietly melt away, and your happiness, before you know it, heals another.<br>Please, slowly surrender yourself to this endless cycle of healing that begins right here.</p></details></li>
+<li><strong class="wt">つくることは、生きること。</strong> <span class="m">(To make is to live.)</span><br><span class="m">2026 · Essay · Garden</span><br>→ The tenderness of being involved with one another.</li></ul>
+<h2 id="en-rooms">Rooms</h2>
+<section class="room" style="--c:#a8e032"><h3>① Kaichiku Teiryujo</h3>
+<p>The original venue, the former Takashima No.7 Elementary School, recreated from 3D scans: a classroom, a hallway and a toilet.</p>
+<ul><li><strong class="wt">最期のよそおい</strong><br><span class="m">2026 · Installation · ① Kaichiku Teiryujo</span><br>I applied death makeup to a closed-down school.</li>
+<li><strong class="wt">かかわる</strong><br><span class="m">2026 · Installation · ① Kaichiku Teiryujo</span></li>
+<li><strong class="wt">末期のうるおい</strong><br><span class="m">2026 · Installation · ① Kaichiku Teiryujo</span><br>The second closed-school piece: a touch-reactive work modeled on matsugo-no-mizu, the last water offered to the dying.</li>
+<li><strong class="wt">私のテンションが高いわけ</strong><br><span class="m">2026 · Essay installation · ① Kaichiku Teiryujo</span></li></ul>
+
+</section>
+<section class="room" style="--c:#9d7eff"><h3>② Solo Exhibition CURA</h3>
+<p>A room that recreates the original venue. You touch me, and I mirror you.</p>
+<ul><li><strong class="wt">You touch me, and I mirror you.</strong><br><span class="m">2026 · Installation · ② Solo Exhibition CURA</span><br>A touch-reactive work that attempts to externalize mirror neurons.<br>→ To hold compassion for all things.<details><summary>Caption</summary><p class="deep">Please, gently touch the flowers,<br>or perhaps someone beside you.<br>As you touch, light spreads across the space.<br>It may seem as though the flowers are rejoicing, but it is also the shape of the “joy”<br>born within your own heart.<br>We possess a wondrous ability<br>to reflect the emotions of others like a mirror.<br>The gentle light born from your touch will reflect in the hearts of those who see it, delivering a warm sense of healing.<br>To cherish someone is to CURA yourself.<br>To cherish yourself is to CURA someone else.<br>You and I, people and things.<br>Through touch, our boundaries quietly melt away, and your happiness, before you know it, heals another.<br>Please, slowly surrender yourself to this endless cycle of healing that begins right here.</p></details></li></ul>
+
+</section>
+<section class="room" style="--c:#eef3ff"><h3>③ blankspace <span class="badge">Coming soon</span></h3>
+<p>A place for prototypes. Coming soon.</p>
+
+
+</section>
+<section class="room" style="--c:#ff33a8"><h3>④ VJ Booth</h3>
+<p>Visuals from my VJ set in Shibuya. Touch the deck to switch to the next clip.</p>
+
+
+<p class="m">Clips: thermal field / editorial grid / thermal contour / riso halftone / heat matrix / bayer dither / crt bars</p></section>
+<section class="room" style="--c:#ffbe2e"><h3>⑤ Shop <span class="badge">Coming soon</span></h3>
+<p>Electronics, physical works and NFT art. For commissions and purchases, please get in touch.</p>
+
+<p><span class="pill">Electronics</span> <span class="pill">Physical works</span> <span class="pill">NFT art</span></p><p><a href="#en-contact">→ Contact</a></p>
+</section>
+<h2 id="en-garden" class="garden">Garden</h2>
+<p>The garden in the middle of the greenhouse. You can climb the spiral staircase, “To make is to live.”</p>
+<ul><li><strong class="wt">つくることは、生きること。</strong> <span class="m">(To make is to live.)</span><br><span class="m">2026 · Essay · Garden</span><br>→ The tenderness of being involved with one another.</li></ul>
+<h2 id="en-about">About Marcy</h2>
+<p><strong>Marcy</strong> — Marcy Miwa</p>
+<p class="motto">We are born curators of our souls.</p>
+<p>I am an artist and curator. I am into creative coding.</p>
+<p><span class="m">Skills:</span> TouchDesigner / Blender / Resolume Avenue / DMX</p>
+<h2 id="en-contact" class="contact">Contact</h2>
+<p><a href="mailto:contact@marcymiwa.com">contact@marcymiwa.com</a></p>
+<p><a href="https://www.instagram.com/marcy.miwa/" rel="noopener">Instagram @marcy.miwa</a></p>
+
+<p><a href="#top">↑ Back to top</a></p>
 </article>
+<footer>NIWA by Marcy Miwa</footer>
 </main>
 </body>
 </html>

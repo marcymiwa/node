@@ -64,17 +64,34 @@ for (const s of sizes) {
   await audit(page, `${s.name}/menu`);
   if (await page.locator('#menu').isHidden()) problems.push(`${s.name}: menu never appeared`);
 
-  // つれていって → 個展CURA → 作品
-  await page.locator('#menu button', { hasText: 'つれていって' }).click();
-  for (let i = 0; i < 4 && await page.locator('#menu').isHidden(); i++) { await page.locator('#windowBody').click(); await page.waitForTimeout(200); }
-  await page.screenshot({ path: path.join(OUT, `${s.name}-2-take.png`) });
-  await page.locator('#menu button', { hasText: '個展' }).click();
-  for (let i = 0; i < 4 && await page.locator('#menu').isHidden(); i++) { await page.locator('#windowBody').click(); await page.waitForTimeout(200); }
-  await page.locator('#menu button').first().click();
-  await page.waitForTimeout(400);
+  const advance = async () => { for (let i = 0; i < 8 && await page.locator('#menu').isHidden(); i++) { await page.locator('#windowBody').click(); await page.waitForTimeout(220); } };
+  // へやのこと → 個展CURA → つれていって → へやの なか → 作品
+  await page.locator('#menu .item', { hasText: 'へやのこと' }).click();
+  await advance();
+  await page.screenshot({ path: path.join(OUT, `${s.name}-2-rooms.png`) });
+  await page.locator('#menu .item', { hasText: '個展CURA' }).click();
+  await advance();
+  await page.locator('#menu .item', { hasText: 'つれていって' }).click();
+  await page.waitForSelector('#sheet:not([hidden])', { timeout: 5000 });
+  await page.waitForTimeout(300);
+  await page.screenshot({ path: path.join(OUT, `${s.name}-3-room.png`) });
+  await page.locator('#sheet .work-row').first().click();
+  await page.waitForTimeout(350);
   await page.screenshot({ path: path.join(OUT, `${s.name}-3-work.png`) });
   await audit(page, `${s.name}/work`);
   await page.locator('#sheetClose').click();
+  // とびらを タップ（④ VJ）
+  await page.locator('#doors .door[data-room="vj"]').click();
+  await advance();
+  await page.screenshot({ path: path.join(OUT, `${s.name}-3-door.png`) });
+  if (!(await page.locator('#line').textContent()).includes('はいる')) problems.push(`${s.name}: door prompt missing はいる？`);
+  await page.locator('#backBtn').click();
+  await advance();
+  // またね（へやを みたあと → おわかれ と いちらん）
+  await page.locator('#menu .item', { hasText: 'またね' }).click();
+  await advance();
+  await page.screenshot({ path: path.join(OUT, `${s.name}-3-bye.png`) });
+  if (!(await page.locator('#menu').textContent()).includes('さくひん いちらん')) problems.push(`${s.name}: farewell menu missing works list`);
 
   // 夜 + 英語
   await page.goto(`${base}/index.html?time=21:00&lang=en`, { waitUntil: 'load' });
@@ -82,7 +99,7 @@ for (const s of sizes) {
   for (let i = 0; i < 6 && await page.locator('#menu').isHidden(); i++) { await page.locator('#windowBody').click(); await page.waitForTimeout(250); }
   await page.screenshot({ path: path.join(OUT, `${s.name}-4-night-en.png`) });
   await audit(page, `${s.name}/night-en`);
-  await page.evaluate(() => window.__niwa.openAllWorks());
+  await page.evaluate(() => window.__niwa.openWorksList());
   await page.waitForTimeout(300);
   await page.screenshot({ path: path.join(OUT, `${s.name}-5-all.png`) });
   await audit(page, `${s.name}/all`);
