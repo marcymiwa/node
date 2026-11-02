@@ -2,7 +2,12 @@
 
 PC版の ポートフォリオ「NIWA（塔の中の温室）」の まんなかにある **ヒント小屋の中身** を、スマホの 1 画面に したもの。
 
-- 上: 温室の 格子の ドーム、かべの とびら ①〜⑤、ヒント小屋と まーしー（ぜんぶ SVG で 描くので 画像を 読まない）
+- 上: **3D の 庭**。スマホを かたむけると（ジャイロ）、ヒント小屋の まえに 立って まわりを 見まわせる
+  - 小屋は 絵を 部品ごとに 板にして 奥行きを ずらした ジオラマ（なか → まーしー → カウンター → やね）
+  - ふりかえると 温室の 格子の ドーム、かべぞいの らせん階段、踊り場ごとの とびら ①〜⑤、ただよう 光の粒
+  - iPhone は「かたむけて みる」を おして 1 回 ゆるす。ジャイロが ない ときは ドラッグで 見まわす
+  - まーしー・かんばん・とびらは 3D の なかで タップできる（「しょうめん」で 小屋に もどる）
+  - 3D が うごかない 端末では、2D の 小屋の 絵（SVG）に なる。`?flat=1` でも 2D
 - 下: MOTHER2 風の **マーシーの窓**。PC版と おなじ ことば・おなじ ながれ
 
 ```
@@ -25,6 +30,9 @@ npx serve .            # または python3 -m http.server
 
 - `?lang=en` … 英語で ひらく（右上の JA / EN でも かわる。えらんだ ことばは おぼえておく）
 - `?time=21:00` … 時間帯の 空を ためす（ふだんは 見ている人の 時計: 朝・昼・夕方・夜）
+- `?flat=1` … 3D を つかわず 2D の 小屋で ひらく
+
+ジャイロ（かたむき）は https の ページでしか うごかない（GitHub Pages は https なので だいじょうぶ）。
 
 GitHub Pages なら、Settings → Pages で このブランチ（または main）の ルートを えらぶだけ。
 
@@ -35,13 +43,16 @@ GitHub Pages なら、Settings → Pages で このブランチ（または main
 | `index.html` | ヒント小屋の ページ |
 | `assets/js/content.js` | **ことば と さくひん**（ここだけ さわれば 中身が かわる） |
 | `assets/js/app.js` | マーシーの窓の うごき（文字おくり・コマンド・もどる・作品の窓） |
-| `assets/js/scene.js` | 絵: ドーム・とびら・小屋・まーしー・作品の 小さな絵 |
+| `assets/js/room3d.js` | 3D の 庭（three.js）: ジャイロ / ドラッグで 見まわし、タップ |
+| `assets/js/scene.js` | 絵: ドーム・とびら・小屋・まーしー・作品の 小さな絵（3D の 板の もと にも なる） |
+| `assets/vendor/three.module.min.js` | three.js r170（MIT、`three.LICENSE`）。CDN に たよらない ために 同梱 |
 | `assets/js/glitter.js` | ただよう 光の粒（コスメの グリッター風） |
 | `assets/js/sound.js` | ピコピコ音（はじめは OFF。WebAudio で その場で つくる） |
 | `assets/css/hut.css` | 見た目（PC版の 着せかえ「lab candy」の 色・窓） |
 | `list.html` | もじだけの ページ（`node tools/build-list.mjs` で content.js から つくる） |
 | `assets/img/ogp.png` | シェア画像（`node tools/make-ogp.mjs` で 撮りなおせる） |
-| `tests/mobile-check.mjs` | スマホ幅（320 / 375 / 390px）で ためす |
+| `tests/mobile-check.mjs` | スマホ幅（320 / 375 / 390px）で 会話の ながれを ためす（2D） |
+| `tests/room3d-check.mjs` | 3D: ひらく・見まわす・ふりかえる・まーしーを タップ・夜 |
 
 ## 作品を 足す・なおす
 

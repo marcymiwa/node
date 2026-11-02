@@ -55,7 +55,7 @@ for (const s of sizes) {
   page.on('pageerror', (e) => problems.push(`${s.name}: pageerror ${e.message}`));
   page.on('console', (m) => { if (m.type() === 'error' && !/fonts\.g/.test(m.text() + (m.location()?.url || ''))) problems.push(`${s.name}: console ${m.text()}`); });
   await page.route(/fonts\.(googleapis|gstatic)\.com/, (r) => r.abort());
-  await page.goto(`${base}/index.html?time=14:00`, { waitUntil: 'load' });
+  await page.goto(`${base}/index.html?time=14:00&flat=1`, { waitUntil: 'load' });
   await page.waitForTimeout(600);
   // 会話を すすめて メニューまで
   for (let i = 0; i < 6 && await page.locator('#menu').isHidden(); i++) { await page.locator('#windowBody').click(); await page.waitForTimeout(250); }
@@ -94,7 +94,7 @@ for (const s of sizes) {
   if (!(await page.locator('#menu').textContent()).includes('さくひん いちらん')) problems.push(`${s.name}: farewell menu missing works list`);
 
   // 夜 + 英語
-  await page.goto(`${base}/index.html?time=21:00&lang=en`, { waitUntil: 'load' });
+  await page.goto(`${base}/index.html?time=21:00&lang=en&flat=1`, { waitUntil: 'load' });
   await page.waitForTimeout(500);
   for (let i = 0; i < 6 && await page.locator('#menu').isHidden(); i++) { await page.locator('#windowBody').click(); await page.waitForTimeout(250); }
   await page.screenshot({ path: path.join(OUT, `${s.name}-4-night-en.png`) });

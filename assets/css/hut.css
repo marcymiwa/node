@@ -466,3 +466,19 @@ button { font: inherit; color: inherit; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
 }
+
+/* ---------- 3D（かたむけると 庭に 立っている みたいに） ---------- */
+.room3d { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; cursor: grab; }
+.room3d:active { cursor: grabbing; }
+/* 3D の ときは 2D の 絵を かくす（小屋の SVG は 3D の 板の もとに つかうので 消さない） */
+.is3d .sky, .is3d .dome { display: none; }
+.is3d .scene { visibility: hidden; }
+/* とびらは 3D の なかに あるので、ボタンは 読み上げ・キーボード用に 見えなく して のこす */
+.is3d .doors { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.is3d .doors .door:focus { position: fixed; }
+.look-ctl {
+  position: absolute; z-index: 5; right: 10px; bottom: 10px;
+  display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end;
+}
+.look-ctl .chip { min-height: 44px; font-size: 16px; }
+#gyroBtn { background: linear-gradient(180deg, #ffd0e8, #ff8fc8); }

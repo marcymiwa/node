@@ -51,6 +51,10 @@ export const UI = {
   openPc: { ja: '3D の温室へ', en: 'Enter the 3D greenhouse' },
   clips: { ja: '映像', en: 'Clips' },
   items: { ja: 'おいている もの', en: 'In the shop' },
+  gyro: { ja: 'かたむけて みる', en: 'Tilt to look' },
+  recenter: { ja: 'しょうめん', en: 'Face the hut' },
+  lookHint: { ja: 'スマホを かたむけるか、ドラッグで まわりを みられるよ。', en: 'Tilt your phone or drag to look around.' },
+  gyroNo: { ja: 'かたむきが つかえないみたい… ドラッグで みてね。', en: "Tilt isn't available… drag to look around." },
 };
 
 // へや（温室の かべの 階段の とびら）。色は lab candy の着せかえの色。

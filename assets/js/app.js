@@ -9,6 +9,13 @@
 import { SITE, UI, ROOMS, GARDEN, WORKS, TALK } from './content.js';
 import { renderDome, renderDoors, renderHut, motifSVG } from './scene.js';
 import { startGlitter } from './glitter.js';
+// 3D（three.js）は つかえる ときだけ あとから 読む。読めなくても 2D で うごく。
+function supports3D() {
+  try {
+    const c = document.createElement('canvas');
+    return !!(window.WebGLRenderingContext && (c.getContext('webgl2') || c.getContext('webgl')));
+  } catch { return false; }
+}
 import { Sound } from './sound.js';
 
 const $ = (s) => document.querySelector(s);
@@ -59,6 +66,7 @@ function timeOfDay(d = new Date()) {
 function applyTime() {
   const tod = timeOfDay();
   app.dataset.tod = tod;
+  if (room3d) room3d.applyColors();
   const meta = document.querySelector('meta[name="theme-color"]');
   if (meta) meta.content = { dawn: '#b9a6ff', day: '#8fc8ff', dusk: '#6b5bd6', night: '#141a3d' }[tod];
 }
@@ -95,6 +103,7 @@ function randomMurmur() {
   return TALK.murmurs[i];
 }
 function hop() {
+  if (room3d) room3d.hop();
   hut.marcy.classList.remove('hop');
   void hut.marcy.getBoundingClientRect();
   hut.marcy.classList.add('hop');
@@ -111,7 +120,35 @@ const activate = (node, fn) => {
   node.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fn(); } });
 };
 activate(hut.marcy, onMarcy);
-activate(hut.sign, () => { sound.unlock(); if (winClosed) openTalk(false); scene(howto); });
+const onSign = () => { sound.unlock(); if (winClosed) openTalk(false); scene(howto); };
+activate(hut.sign, onSign);
+
+// ---------- 3D（かたむけると 庭に 立っている みたいに） ----------
+let room3d = null;
+async function start3D() {
+  if (params.has('flat') || !supports3D()) return;
+  try {
+    const { startRoom3D } = await import('./room3d.js');
+    room3d = await startRoom3D({
+      stage: $('#stage'), hutSvg: $('#scene svg'), rooms: ROOMS, reduced: reduceMotion,
+      onDoor: (id) => doorPrompt(id), onMarcy, onSign,
+    });
+    app.classList.add('is3d');
+    const ctl = $('#lookCtl'); ctl.hidden = false;
+    const gyroBtn = $('#gyroBtn');
+    if (room3d.needsPermission) gyroBtn.hidden = false;
+    gyroBtn.addEventListener('click', async (e) => {
+      e.stopPropagation(); sound.unlock();
+      const ok = await room3d.requestGyro();
+      if (ok) { gyroBtn.hidden = true; say(t(UI.lookHint), 3000); } else say(t(UI.gyroNo), 3000);
+    });
+    $('#recenterBtn').addEventListener('click', (e) => { e.stopPropagation(); room3d.recenter(); sound.back(); });
+    setTimeout(() => { if (!winClosed) say(t(UI.lookHint), 3600); }, 3800);
+  } catch (err) {
+    console.warn('3D を つかわず 2D で ひらきます', err);
+    app.classList.remove('is3d');
+  }
+}
 
 // ---------- 窓: ことばを じゅんに ----------
 let queue = [];
@@ -541,6 +578,7 @@ function applyLang() {
   $('#stage').setAttribute('aria-label', t(UI.stage));
   $('#windowWrap').setAttribute('aria-label', t(UI.window));
   hut.setSign(lang === 'ja' ? 'ヒント' : 'HINT');
+  if (room3d) room3d.setSign();
   doors.relabel();
   updateSoundChip();
 }
@@ -571,7 +609,8 @@ applyTime();
 setInterval(applyTime, 60 * 1000);
 applyLang();
 startGlitter($('#glitter'), { reduced: reduceMotion });
+start3D();
 setTimeout(() => scene(opening), reduceMotion ? 0 : 450);
 
 // テスト・デバッグ用
-window.__niwa = { doorPrompt, openRoom, openWork, openWorksList, goBack, closeTalk, openTalk, get lang() { return lang; } };
+window.__niwa = { get room3d() { return room3d; }, doorPrompt, openRoom, openWork, openWorksList, goBack, closeTalk, openTalk, get lang() { return lang; } };
