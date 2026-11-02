@@ -55,8 +55,9 @@
         <div class="window-head">
           <button class="back" id="backBtn" type="button" hidden><span aria-hidden="true">◀</span> <span data-i18n="back">もどる</span></button>
         </div>
-        <div class="window-body" id="windowBody" aria-live="polite">
-          <p class="line" id="line"></p>
+        <div class="window-body" id="windowBody">
+          <p class="sr-only" id="srLine" aria-live="polite" aria-atomic="true"></p>
+          <p class="line" id="line" aria-hidden="true"></p>
           <span class="more" id="more" aria-hidden="true">▼</span>
         </div>
         <nav class="menu" id="menu" hidden></nav>

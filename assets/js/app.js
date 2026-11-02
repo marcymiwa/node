@@ -15,6 +15,7 @@ const $ = (s) => document.querySelector(s);
 const app = $('#app');
 const winEl = $('#window');
 const lineEl = $('#line');
+const srLine = $('#srLine'); // 読み上げ用: 1 行まるごとを 1 回だけ（1 字ずつ 読まれないように）
 const moreEl = $('#more');
 const menuEl = $('#menu');
 const bodyEl = $('#windowBody');
@@ -137,6 +138,7 @@ function nextLine() {
 }
 function typeLine(full) {
   moreEl.classList.remove('on');
+  srLine.textContent = full;
   const chars = Array.from(full);
   if (reduceMotion) { lineEl.textContent = full; doneTyping(); return; }
   lineEl.textContent = '';
